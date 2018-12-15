@@ -1,0 +1,12 @@
+﻿@model TicketRetailSystem.ViewModels.TestowyViewModel
+
+
+
+<h2>Ticket</h2>
+
+@{ 
+    foreach (var ticket in Model.Tickets)
+    {
+        <p> @ticket.Id : @ticket.IssuedPrice</p>
+    }
+}
