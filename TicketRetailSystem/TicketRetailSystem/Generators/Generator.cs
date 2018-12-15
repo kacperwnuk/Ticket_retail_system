@@ -68,7 +68,7 @@ namespace TicketRetailSystem.Generators
         private void GenerateTicketTypes()
         {
             // wszystkie strefy i wszystkie okresy (tylko ulgowe i normalne)
-            foreach(TicketPeriod period in Enum.GetValues(typeof(TicketPeriod)))
+            foreach (TicketPeriod period in Enum.GetValues(typeof(TicketPeriod)))
             {
                 foreach (Zone zone in Enum.GetValues(typeof(Zone)))
                 {
@@ -86,7 +86,7 @@ namespace TicketRetailSystem.Generators
                         DiscountType = DiscountType.Normal
                     });
                 }
-                
+
             }
 
             // bilety długookresowe (tylko kombatanci, przewodnicy i studeni)
@@ -98,8 +98,11 @@ namespace TicketRetailSystem.Generators
                 {
                     foreach (TicketPeriod period in periods)
                     {
-                        context.TicketTypes.Add(new TicketType(){
-                            TicketPeriod = period, Zone = zone, DiscountType = discount
+                        context.TicketTypes.Add(new TicketType()
+                        {
+                            TicketPeriod = period,
+                            Zone = zone,
+                            DiscountType = discount
                         });
                     }
                 }
@@ -107,34 +110,40 @@ namespace TicketRetailSystem.Generators
 
         }
 
-        private void GenerateTransactionsWithPaperTickets(int howMany = 1, int maxTicketsInTransaction = 1)
+        private void GenerateTransactionsWithPaperTickets(int howMany, int maxTicketsInTransaction, DateTime start, DateTime end)
         {
             Array paymentTypes = Enum.GetValues(typeof(PaymentType));
             var ticketTypesQuery = from tt in context.TicketTypes
                                    where tt.TicketPeriod != TicketPeriod.ThreeMonths
-                                   || tt.TicketPeriod != TicketPeriod.Month
+                                   && tt.TicketPeriod != TicketPeriod.Month
                                    select tt;
             var ticketTypes = ticketTypesQuery.ToArray();
 
             for (int i = 0; i < howMany; i++)
             {
                 // create transaction
+                TimeSpan dt = end - start;
+                TimeSpan timeOfDay = new TimeSpan(random.Next(7, 15), random.Next(60), random.Next(60));
+                DateTime transactionDate = start + new TimeSpan(random.Next(dt.Days), 0, 0, 0) + timeOfDay;
+
                 Transaction transaction = new Transaction()
                 {
                     PaymentType = (PaymentType)paymentTypes.GetValue(random.Next(paymentTypes.Length)),
-                    Tickets = new List<Ticket>()
+                    Tickets = new List<Ticket>(),
+                    Date = transactionDate,
+                    TotalPrice = 0.0M
                 };
 
                 // pick how many tickets were bought during this transaction
                 int ticketsInTransaction = random.Next(maxTicketsInTransaction);
-                if(ticketsInTransaction  == 0)
+                if (ticketsInTransaction == 0)
                 {
                     ticketsInTransaction = 1;
                 }
 
                 // pick a random short-term ticket type
                 TicketType randomTicketType = (TicketType)ticketTypes[random.Next(ticketTypes.Length)];
-                
+
                 // add appropriate number of tickets to this transation
                 for (int j = 0; j < ticketsInTransaction; j++)
                 {
@@ -146,28 +155,29 @@ namespace TicketRetailSystem.Generators
                         Card = null,
                         TicketType = randomTicketType,
                     };
+                    transaction.TotalPrice += ticket.IssuedPrice;
                     transaction.Tickets.Add(ticket);
                 }
                 context.Transactions.Add(transaction);
-            }    
+            }
         }
 
-        private void GenerateCardTickets(int howManyPerCard, DateTime start, DateTime end)
+        private void GenerateCardTickets(int howManyPerCard, DateTime end)
         {
             //var ticketTypes = context.TicketTypes.ToArray();
             var ticketTypesQuery = from tt in context.TicketTypes
-                              where tt.TicketPeriod == TicketPeriod.ThreeMonths
-                              || tt.TicketPeriod == TicketPeriod.Month
-                              select tt;
+                                   where tt.TicketPeriod == TicketPeriod.ThreeMonths
+                                   || tt.TicketPeriod == TicketPeriod.Month
+                                   select tt;
             var ticketTypes = ticketTypesQuery.ToArray();
 
             // add tickets to each card
-            List < TransportCard > cards = context.TransportCards.ToList();
-            foreach(var card in cards)
+            List<TransportCard> cards = context.TransportCards.ToList();
+            foreach (var card in cards)
             {
                 // pick a ticket type for this card
                 TicketType randomTicketType = (TicketType)ticketTypes[random.Next(ticketTypes.Length)];
-                
+
                 TimeSpan ticketTimeSpan;
                 int days = 0;
                 if (randomTicketType.TicketPeriod == TicketPeriod.Month)
@@ -188,19 +198,23 @@ namespace TicketRetailSystem.Generators
                     validToDate = validToDate - ticketTimeSpan + timeOfDay;
                     validToDate = validToDate - new TimeSpan(1 + random.Next(10), 0, 0, 0);
                     validFromDate = validToDate - ticketTimeSpan;
+                    DateTime transactionDate = validFromDate;
 
                     // create transaction for this ticket on this card
                     Array paymentTypes = Enum.GetValues(typeof(PaymentType));
                     Transaction transaction = new Transaction()
                     {
                         PaymentType = (PaymentType)paymentTypes.GetValue(random.Next(paymentTypes.Length)),
-                        Tickets = new List<Ticket>()
+                        Tickets = new List<Ticket>(),
+                        Date = transactionDate,
+                        TotalPrice = 0.0M
                     };
 
+                    decimal price = days * 2.50M;
                     // finally create a ticket
                     Ticket ticket = new Ticket()
                     {
-                        IssuedPrice = days * 2.50M,
+                        IssuedPrice = price,
                         ValidFromDate = validFromDate,
                         ValidToDate = validToDate,
                         Card = card,
@@ -209,6 +223,7 @@ namespace TicketRetailSystem.Generators
 
                     // add created ticket to the appropriate transaction
                     transaction.Tickets.Add(ticket);
+                    transaction.TotalPrice += price;
 
                     // add transaction associated with this ticket
                     context.Transactions.Add(transaction);
@@ -222,15 +237,23 @@ namespace TicketRetailSystem.Generators
 
         public void Run()
         {
-            //GenerateUsersAndCards(500);
-            //GenerateTicketTypes();
-            //GenerateTransactionsWithPaperTickets(1000, 3);
-            /*
-            GenerateCardTickets(5, new DateTime(),
-                new DateTime(2018, 11, 11)
-            );
-            */
-            context.SaveChanges();
+
+            GenerateUsersAndCards(500); context.SaveChanges();
+
+            GenerateTicketTypes(); context.SaveChanges();
+
+            for(int i = 0; i < 10; i++)
+            {
+                GenerateTransactionsWithPaperTickets(
+                    100,
+                    5,
+                    new DateTime(2017, 1, 1),
+                    new DateTime(2018, 11, 11)
+                );
+                context.SaveChanges();
+            }
+
+            GenerateCardTickets(5, new DateTime(2018, 11, 11)); context.SaveChanges();
         }
     }
 }
