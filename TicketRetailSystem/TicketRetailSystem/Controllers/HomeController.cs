@@ -4,11 +4,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TicketRetailSystem.Models.Entity;
+using TicketRetailSystem.ViewModels;
 
 namespace TicketRetailSystem.Controllers
 {
     public class HomeController : Controller
     {
+
+        private RetailContext ctx;
+
+        public HomeController()
+        {
+            ctx = new RetailContext();
+        }
+
+
         public ActionResult Index()
         {
             using (var ctx = new RetailContext())
@@ -17,6 +27,7 @@ namespace TicketRetailSystem.Controllers
 
                 ctx.Users.Add(stud);
                 ctx.SaveChanges();
+
             }
 
             return View();
@@ -35,5 +46,7 @@ namespace TicketRetailSystem.Controllers
 
             return View();
         }
+
+
     }
 }

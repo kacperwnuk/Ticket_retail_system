@@ -1,0 +1,11 @@
+﻿@model TicketRetailSystem.ViewModels.TestowyViewModel
+@{
+    ViewBag.Title = "GetAllTransactions";
+}
+
+<h2>GetAllTransactions</h2>
+
+@foreach(var tran in Model.Transactions)
+{
+    @tran.Date <br/>
+}
