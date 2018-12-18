@@ -19,5 +19,8 @@ namespace TicketRetailSystem.Models.Entity
 
         [Required]
         public DiscountType DiscountType { get; set; }
+
+        [Required]
+        public TicketBinding TicketBinding { get; set; }
     }
 }

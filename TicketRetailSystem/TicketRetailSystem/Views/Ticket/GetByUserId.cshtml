@@ -3,21 +3,29 @@
     ViewBag.Title = "GetByUserIdView";
 }
 
-<h2>GetByUserIdView</h2>
-
-Id uzytkownika: @Model.Tickets.First().UserId <br/>
-Imie uzytkownika: @Model.Tickets.First().UserName <br/>
-Nazwisko uzytkownika: @Model.Tickets.First().UserSurname <br/>
+<h2>Bilety zakupione przez użytkownika</h2>
 
 
-<ul>
-        @foreach (var ticket in Model.Tickets)
-    {
+@if (Model.Tickets.Count != 0)
+{
+    <p>Id uzytkownika: @Model.Tickets.First().UserId</p> 
+    <p>Imie uzytkownika: @Model.Tickets.First().UserName</p> 
+    <p>Nazwisko uzytkownika: @Model.Tickets.First().UserSurname</p> 
 
-        <li>Typ karty : @ticket.CardType</li>
-        <li>Czy aktywna : @ticket.IsActive</li>
-        <li>Rodzaj biletu : @ticket.TicketType.DiscountType</li>
-        <li>Wazny od : @ticket.ValidFromDate</li>
-        <p>--------------------------------------</p>
-    }
-</ul>
+    <ul>
+       @foreach (var ticket in Model.Tickets)
+       {
+           <li>Typ karty : @ticket.CardType</li>
+           <li>Czy aktywna : @ticket.IsActive</li>
+           <li>Rodzaj biletu : @ticket.TicketType.DiscountType</li>
+           <li>Wazny od : @ticket.ValidFromDate</li>
+           <li>--------------------------------------</li>
+       }
+    </ul>
+
+}
+else
+{
+    <br/>
+    <p>Brak użytkownika o podanym ID</p>
+}

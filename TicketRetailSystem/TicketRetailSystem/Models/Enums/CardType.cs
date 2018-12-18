@@ -10,6 +10,7 @@ namespace TicketRetailSystem.Models.Enums
         CityCard,
         StudentId,
         WarsawInhabitant,
-        YoungInhabitant
+        YoungInhabitant,
+        Paper
     }
 }

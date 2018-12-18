@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using TicketRetailSystem.Models.Entity;
+using TicketRetailSystem.Models.Enums;
 using TicketRetailSystem.ViewModels;
 
 namespace TicketRetailSystem.Controllers
@@ -11,15 +10,55 @@ namespace TicketRetailSystem.Controllers
     [RoutePrefix("raport")]
     public class TicketController : Controller
     {
-
         private RetailContext ctx;
 
         public TicketController()
         {
             ctx = new RetailContext();
         }
-        
-        // GET: Ticket
+
+        protected override void Dispose(bool disposing)
+        {
+            ctx.Dispose();
+        }
+
+        //5
+        [Route("people")]
+        public ActionResult SearchForAmountOfPeople()
+        {
+            return View();
+        }
+
+        //6
+        [Route("ticketType")]
+        public ActionResult CountTicketsInZones()
+        {
+            return View();
+        }
+
+        //7
+        [Route("transactions")]
+        public ActionResult SearchForTransaction()
+        {
+            return View();
+        }
+
+        //8
+        [Route("user")]
+        public ActionResult SearchByUserId()
+        {
+            return View();
+        }
+
+        //9
+        [Route("totalProfit")]
+        public ActionResult SearchForProfit()
+        {
+            return View();
+        }
+
+
+        //pomocnicza - niepotrzebna do projektu
         [Route("ticket/{id}")]
         public ActionResult GetById(int id)
         {
@@ -33,98 +72,163 @@ namespace TicketRetailSystem.Controllers
             return View(ticket);
         }
 
+        //pomocnicza - niepotrzebna do projektu
         [Route("ticket/all")]
-        public ActionResult ShowAll()
+        public ActionResult ShowAllTickets()
         {
-
             var viewModel = new TestowyViewModel(ctx.Tickets.ToList());
-
             return View(viewModel);
         }
 
-
-        [Route("ticket/ticketType/{id}")]
-        public ActionResult GetByTicketType(int id)
-        {
-            //var tickets = new TestowyViewModel(ctx.Tickets.Where(ticket => ticket.TicketType.Id == id));
-            var tickets = 1;
-            return View(tickets);
-        }
-
-        //7 Użytkownik powinien mieć wgląd do historii transakcji w danym dniu.
-        [Route("ticket/transactions/{date:datetime}")]
-        public ActionResult GetByDate(DateTime date)
-        {
-
-            TransactionViewModel transactions = new TransactionViewModel();
-
-            transactions.Transcations = ( from tr in ctx.Transactions
-                                          join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                                          join c in ctx.TransportCards on t.Card.Id equals c.Id
-                                          join u in ctx.Users on c.User.Id equals u.Id
-                                          where tr.Date == date
-                                          select new TransactionViewModel
-                                          {
-                                              TransactionId = tr.Id,
-                                              TotalPrice = tr.TotalPrice,
-                                              PaymentType = tr.PaymentType,
-                                              TicketId = t.Id,
-                                              TicketIssuedPrice = t.IssuedPrice,
-
-                                          }
-                ).ToList();
-
-
-            return Content(date.ToString());
-        }
-
-        //6 Użytkownik powinien móc sprawdzić ile biletów zostało kupionych danego rodzaju(kartonikowy, legitymacja studencka, karta miejska itd.) w określonym przez użytkownika przedziale czasu.
-        [Route("ticket/ticketType/{from:datetime}/{to:datetime}")]
-        public ActionResult GetAmountOfTickets()
-        {
-            return View();
-        }
-
-        [Route("transactions")]
+        //pomocnicza - niepotrzebna do projektu
+        [Route("transactions/all")]
         public ActionResult GetAllTransactions()
         {
             var transactions = new TestowyViewModel(ctx.Transactions.ToList());
             return View(transactions);
         }
 
-        //9 Użytkownik powinien móc sprawdzić łączny zarobek ze sprzedaży biletów w danym przez użytkownika przedziale czasu.
-        [Route("ticket/totalCost/{from:datetime}/{to:datetime}")]
-        public ActionResult GetTotalCostOfTickets(DateTime from, DateTime to)
+        //5.Użytkownik powinien móc sprawdzić ile osób kupiło bilet danego typu w określonym przez użytkownika przedziale czasu.
+        [Route("ticket/people")]
+        [HttpPost]
+        public ActionResult GetAmountOfPeople(DatesViewModel dates)
         {
-            var totalCost = ctx.Transactions.Where(el => DateTime.Compare(el.Date, from) >= 0 && DateTime.Compare(el.Date, to) <= 0);
-            return Content(totalCost.First().ToString());
+            var countPeople = new CountPeopleViewModel()
+            {
+                TicketTypesWithAmount = (from tr in ctx.Transactions
+                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                        join c in ctx.TransportCards on t.Card.Id equals c.Id
+                        join u in ctx.Users on c.User.Id equals u.Id
+                        where DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
+                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
+                        group new {tr, t, c, u} by new
+                        {
+                            t.TicketType.Zone,
+                        }
+                        into zones
+                        select new CountPeopleViewModel
+                        {
+                            Zone = zones.Key.Zone,
+                            AmountOfPeople = zones.Select(el => new {el.u.Id}).Distinct().Count()
+                        }
+                    ).ToList()
+            };
+
+            return View(countPeople);
+        }
+
+        //6 Użytkownik powinien móc sprawdzić ile biletów zostało kupionych danego rodzaju(kartonikowy, legitymacja studencka, karta miejska itd.) w określonym przez użytkownika przedziale czasu.
+        [Route("ticket/ticketType")]
+        [HttpPost]
+        public ActionResult GetAmountOfTickets(DatesViewModel dates)
+        {
+            var groupByTicketTypes = new TicketTypeViewModel()
+            {
+                TicketZonesWithAmount = (from tr in ctx.Transactions
+                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                        join c in ctx.TransportCards on t.Card.Id equals c.Id
+                        where DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
+                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
+                        group new {t, c, tr} by c.CardType
+                        into types
+                        select new TicketTypeViewModel
+                        {
+                            CardType = types.Key,
+                            AmountOfTickets = types.Count()
+                        }
+                    )
+                    .Union(from tr in ctx.Transactions
+                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                        where t.Card == null && DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
+                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
+                        group new {t, tr} by t.Card
+                        into types
+                        select new TicketTypeViewModel
+                        {
+                            CardType = CardType.Paper,
+                            AmountOfTickets = types.Count()
+                        }
+                    ).ToList()
+            };
+
+            return View(groupByTicketTypes);
+        }
+
+        //7 Użytkownik powinien mieć wgląd do historii transakcji w danym dniu.
+        [Route("ticket/transactions")]
+        [HttpPost]
+        public ActionResult GetByDate(DateViewModel date)
+        {
+            var startDate = date.CurrentDate;
+            var endDate = date.CurrentDate.AddDays(1);
+            var transactions = new TransactionViewModel()
+            {
+                Transcations = (from tr in ctx.Transactions
+                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                        join c in ctx.TransportCards on t.Card.Id equals c.Id
+                        join u in ctx.Users on c.User.Id equals u.Id
+                        where tr.Date >= startDate && tr.Date <= endDate
+                        select new TransactionViewModel
+                        {
+                            TransactionId = tr.Id,
+                            TotalPrice = tr.TotalPrice,
+                            PaymentType = tr.PaymentType,
+                            TicketId = t.Id,
+                            TicketIssuedPrice = t.IssuedPrice,
+                            TicketType = t.TicketType,
+                            CardId = c.Id,
+                            UserId = u.Id,
+                            TransactionDate = tr.Date
+                        }
+                    ).ToList()
+            };
+
+            return View(transactions);
         }
 
         //8 Użytkownik powinien móc sprawdzić jakie bilety kupowała określona         osoba(wybierana poprzez id osoby).
-        [Route("ticket/user/{id}")]
+        [Route("ticket/user")]
+        [HttpPost]
         public ActionResult GetByUserId(int id)
         {
-            UserTicketsViewModel userTickets = new UserTicketsViewModel();
+            var userTickets = new UserTicketsViewModel()
+            {
+                Tickets = (from u in ctx.Users
+                        join c in ctx.TransportCards on u.Id equals c.User.Id
+                        join t in ctx.Tickets on c.Id equals t.Card.Id
+                        where u.Id == id
+                        select new UserTicketsViewModel
+                        {
+                            UserId = u.Id,
+                            UserName = u.Name,
+                            UserSurname = u.Surname,
+                            CardType = c.CardType,
+                            IsActive = c.IsActive,
+                            TicketType = t.TicketType,
+                            ValidFromDate = t.ValidFromDate
+                        }
+                    ).ToList()
+            };
 
-            userTickets.Tickets = (from u in ctx.Users
-                              join c in ctx.TransportCards on u.Id equals c.User.Id
-                              join t in ctx.Tickets on c.Id equals t.Card.Id
-                              where u.Id == id
-                              select new UserTicketsViewModel
-                              {
-                                  UserId = u.Id,
-                                  UserName = u.Name,
-                                  UserSurname = u.Surname,
-                                  CardType = c.CardType,
-                                  IsActive = c.IsActive,
-                                  TicketType = t.TicketType,
-                                  ValidFromDate = t.ValidFromDate
-                              }).ToList();
-
-                              
             return View(userTickets);
         }
 
+        //9 Użytkownik powinien móc sprawdzić łączny zarobek ze sprzedaży biletów w danym przez użytkownika przedziale czasu.
+        [Route("ticket/totalProfit")]
+        [HttpPost]
+        public ActionResult GetTotalCostOfTickets(DatesViewModel dates)
+        {
+            var totalCost = new ProfitViewModel()
+            {
+                Profit = ctx.Transactions
+                             .Where(el =>
+                                 DateTime.Compare(el.Date, dates.StartTime) >= 0 &&
+                                 DateTime.Compare(el.Date, dates.EndTime) <= 0).Sum(el => (decimal?) el.TotalPrice) ?? 0,
+                StartDate = dates.StartTime,
+                EndDate = dates.EndTime
+            };
 
+            return View(totalCost);
+        }
     }
 }

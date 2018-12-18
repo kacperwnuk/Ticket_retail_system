@@ -59,12 +59,12 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mscurrentDate="urn:schemas-microsoft-com:xml-mscurrentDate">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
+    <xsd:element name="root" mscurrentDate:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
+          <xsd:element name="metacurrentDate">
             <xsd:complexType>
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
@@ -81,22 +81,22 @@
               <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
-          <xsd:element name="data">
+          <xsd:element name="currentDate">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" mscurrentDate:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" mscurrentDate:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute name="name" type="xsd:string" use="required" mscurrentDate:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" mscurrentDate:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" mscurrentDate:Ordinal="4" />
               <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" mscurrentDate:Ordinal="1" />
               </xsd:sequence>
               <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Target" xml:space="preserve">
+  <currentDate name="Target" xml:space="preserve">
     <value>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</value>
-  </data>
-  <data name="DefaultSchema" xml:space="preserve">
+  </currentDate>
+  <currentDate name="DefaultSchema" xml:space="preserve">
     <value>dbo</value>
-  </data>
+  </currentDate>
 </root>

@@ -167,6 +167,10 @@
     <Compile Include="Migrations\201812151525496_PoprawkiWModelu.Designer.cs">
       <DependentUpon>201812151525496_PoprawkiWModelu.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201812181643362_PoprawkiWModelu1.cs" />
+    <Compile Include="Migrations\201812181643362_PoprawkiWModelu1.Designer.cs">
+      <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\CardTypeDictionary.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\DiscountTypeDictionary.cs" />
@@ -233,12 +237,20 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Ticket\ShowAll.cshtml" />
+    <Content Include="Views\Ticket\ShowAllTickets.cshtml" />
     <Content Include="Views\Ticket\GetById.cshtml" />
     <Content Include="Views\Ticket\GetByTicketType.cshtml" />
     <Content Include="Views\Ticket\GetByUserId.cshtml" />
     <Content Include="Views\Ticket\GetByDate.cshtml" />
     <Content Include="Views\Ticket\GetAllTransactions.cshtml" />
+    <Content Include="Views\Ticket\GetAmountOfTickets.cshtml" />
+    <Content Include="Views\Ticket\GetAmountOfPeople.cshtml" />
+    <Content Include="Views\Ticket\SearchByUserId.cshtml" />
+    <Content Include="Views\Ticket\SearchForAmountOfPeople.cshtml" />
+    <Content Include="Views\Ticket\CountTicketsInZones.cshtml" />
+    <Content Include="Views\Ticket\SearchForTransaction.cshtml" />
+    <Content Include="Views\Ticket\SearchForProfit.cshtml" />
+    <Content Include="Views\Ticket\GetTotalCostOfTickets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -262,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201812151525496_PoprawkiWModelu.resx">
       <DependentUpon>201812151525496_PoprawkiWModelu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812181643362_PoprawkiWModelu1.resx">
+      <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

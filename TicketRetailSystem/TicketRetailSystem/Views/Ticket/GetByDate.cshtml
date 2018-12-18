@@ -1,7 +1,29 @@
-﻿@model 
+﻿@model TicketRetailSystem.ViewModels.TransactionViewModel
 @{
-    ViewBag.Title = "GetByDate";
+    ViewBag.Title = "Transakcje w dniu " ;
 }
 
-<h2>GetByDate</h2>
 
+@if (Model.Transcations.Count != 0)
+{
+    <h2>Transakcje w dniu : @Model.Transcations.First().TransactionDate.ToString("dd.MM.yyyy")</h2>
+
+    <ul>
+        @foreach (var tran in Model.Transcations)
+        {
+            <li>ID : @tran.TicketId</li>
+            <li>Typ biletu : @tran.TicketType.TicketPeriod</li>
+            <li>Cena biletu : @tran.TicketIssuedPrice</li>
+            <li>Sposob zaplaty : @tran.PaymentType</li>
+            <li>ID karty : @tran.CardId</li>
+            <li>ID uzytkownika : @tran.UserId</li>
+            <li>--------------------------------------</li>
+        
+        }
+    </ul>
+}
+else
+{
+    <br/>
+    <p>Nie było żadnych transakcji w danym dniu!</p>
+}
