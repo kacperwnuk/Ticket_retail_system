@@ -1,0 +1,17 @@
+﻿@model TicketRetailSystem.ViewModels.DatesViewModel
+@{
+    ViewBag.Title = "CountTicketsInZones";
+}
+
+<h2>Zlicz bilety w strefach</h2>
+
+@using (Html.BeginForm("GetAmountOfTickets", "Ticket", FormMethod.Post, Url.Action("ticket/ticketType")))
+{
+    <div class="form-group">
+        <label> Data rozpoczecia </label>
+        @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
+        <label> Data zakonczenia </label>
+        @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
+        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+    </div>
+}

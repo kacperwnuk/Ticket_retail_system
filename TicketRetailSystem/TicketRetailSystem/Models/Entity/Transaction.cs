@@ -12,10 +12,10 @@ namespace TicketRetailSystem.Models.Entity
         public int Id { get; set; }
 
         [Required]
-        private DateTime Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
-        private decimal TotalPrice { get; set; }
+        public decimal TotalPrice { get; set; }
 
         public virtual List<Ticket> Tickets { get; set; }
 

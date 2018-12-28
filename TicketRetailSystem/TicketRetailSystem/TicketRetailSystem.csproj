@@ -51,6 +51,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -145,21 +148,28 @@
     <Reference Include="Microsoft.AI.Web">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.5.1\lib\net45\Microsoft.AI.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TicketController.cs" />
+    <Compile Include="Generators\Generator.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201811252210102_Initial.cs" />
     <Compile Include="Migrations\201811252210102_Initial.Designer.cs">
       <DependentUpon>201811252210102_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812151525496_PoprawkiWModelu.cs" />
+    <Compile Include="Migrations\201812151525496_PoprawkiWModelu.Designer.cs">
+      <DependentUpon>201812151525496_PoprawkiWModelu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812181643362_PoprawkiWModelu1.cs" />
+    <Compile Include="Migrations\201812181643362_PoprawkiWModelu1.Designer.cs">
+      <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\CardTypeDictionary.cs" />
@@ -181,6 +191,9 @@
     <Compile Include="Models\Enums\TicketBinding.cs" />
     <Compile Include="Models\Enums\Zone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\TestowyViewModel.cs" />
+    <Compile Include="ViewModels\TransactionViewModel.cs" />
+    <Compile Include="ViewModels\UserTicketsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -189,6 +202,9 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Generators\Resources\first-f.txt" />
+    <Content Include="Generators\Resources\first-m.txt" />
+    <Content Include="Generators\Resources\last.txt" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
@@ -221,6 +237,20 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Ticket\ShowAllTickets.cshtml" />
+    <Content Include="Views\Ticket\GetById.cshtml" />
+    <Content Include="Views\Ticket\GetByTicketType.cshtml" />
+    <Content Include="Views\Ticket\GetByUserId.cshtml" />
+    <Content Include="Views\Ticket\GetByDate.cshtml" />
+    <Content Include="Views\Ticket\GetAllTransactions.cshtml" />
+    <Content Include="Views\Ticket\GetAmountOfTickets.cshtml" />
+    <Content Include="Views\Ticket\GetAmountOfPeople.cshtml" />
+    <Content Include="Views\Ticket\SearchByUserId.cshtml" />
+    <Content Include="Views\Ticket\SearchForAmountOfPeople.cshtml" />
+    <Content Include="Views\Ticket\CountTicketsInZones.cshtml" />
+    <Content Include="Views\Ticket\SearchForTransaction.cshtml" />
+    <Content Include="Views\Ticket\SearchForProfit.cshtml" />
+    <Content Include="Views\Ticket\GetTotalCostOfTickets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -241,6 +271,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201811252210102_Initial.resx">
       <DependentUpon>201811252210102_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812151525496_PoprawkiWModelu.resx">
+      <DependentUpon>201812151525496_PoprawkiWModelu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812181643362_PoprawkiWModelu1.resx">
+      <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -273,7 +309,7 @@
   </ProjectExtensions>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>Ten projekt zawiera odwołania do pakietów NuGet, których nie ma na tym komputerze. Użyj przywracania pakietów NuGet, aby je pobrać. Aby uzyskać więcej informacji, zobacz http://go.microsoft.com/fwlink/?LinkID=322105. Brakujący plik: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>

@@ -1,0 +1,18 @@
+﻿@model TicketRetailSystem.Models.Entity.User
+@{
+    ViewBag.Title = "SearchByUserId";
+}
+
+<h2>Wybierz użytkownika</h2>
+
+@using (Html.BeginForm("GetByUserId", "Ticket", FormMethod.Post, Url.Action("ticket", "user")))
+{
+    <div class="form-group">
+        @Html.LabelFor(u => u.Id)
+        @Html.TextBoxFor(u => u.Id, new { @class = "form-control" })
+        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+    </div>
+}
+
+
+

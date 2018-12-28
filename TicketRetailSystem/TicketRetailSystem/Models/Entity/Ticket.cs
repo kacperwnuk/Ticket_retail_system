@@ -21,5 +21,8 @@ namespace TicketRetailSystem.Models.Entity
 
         [Required]
         public virtual TicketType TicketType { get; set; }
+
+        [Required]
+        public virtual Transaction Transaction { get; set; }
     }
 }

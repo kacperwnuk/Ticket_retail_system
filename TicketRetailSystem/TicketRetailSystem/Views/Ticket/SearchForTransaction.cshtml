@@ -1,0 +1,15 @@
+﻿@model TicketRetailSystem.ViewModels.DateViewModel
+@{
+    ViewBag.Title = "SearchForTransaction";
+}
+
+<h2>Wybierz transakcję</h2>
+
+@using (Html.BeginForm("GetByDate", "Ticket", FormMethod.Post, Url.Action("ticket/transactions")))
+{
+    <div class="form-group">
+        <label>Data transakcji</label>
+        @Html.TextBoxFor(d => d.CurrentDate, new { @class = "form-control" })
+        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+    </div>
+}

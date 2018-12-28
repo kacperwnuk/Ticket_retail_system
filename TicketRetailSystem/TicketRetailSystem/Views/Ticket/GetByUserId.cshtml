@@ -1,0 +1,31 @@
+﻿@model TicketRetailSystem.ViewModels.UserTicketsViewModel
+@{
+    ViewBag.Title = "GetByUserIdView";
+}
+
+<h2>Bilety zakupione przez użytkownika</h2>
+
+
+@if (Model.Tickets.Count != 0)
+{
+    <p>Id uzytkownika: @Model.Tickets.First().UserId</p> 
+    <p>Imie uzytkownika: @Model.Tickets.First().UserName</p> 
+    <p>Nazwisko uzytkownika: @Model.Tickets.First().UserSurname</p> 
+
+    <ul>
+       @foreach (var ticket in Model.Tickets)
+       {
+           <li>Typ karty : @ticket.CardType</li>
+           <li>Czy aktywna : @ticket.IsActive</li>
+           <li>Rodzaj biletu : @ticket.TicketType.DiscountType</li>
+           <li>Wazny od : @ticket.ValidFromDate</li>
+           <li>--------------------------------------</li>
+       }
+    </ul>
+
+}
+else
+{
+    <br/>
+    <p>Brak użytkownika o podanym ID</p>
+}
