@@ -254,6 +254,10 @@
     <Content Include="Views\Ticket\SearchForProfit.cshtml" />
     <Content Include="Views\Ticket\GetTotalCostOfTickets.cshtml" />
     <Content Include="Views\App\ShowBuyForm.cshtml" />
+    <Content Include="Views\App\Checkout.cshtml" />
+    <Content Include="Views\App\Success.cshtml" />
+    <Content Include="Views\App\Failure.cshtml" />
+    <Compile Include="ViewModels\App\MessageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
