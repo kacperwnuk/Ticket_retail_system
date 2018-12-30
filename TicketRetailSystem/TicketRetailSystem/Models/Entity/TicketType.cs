@@ -22,5 +22,8 @@ namespace TicketRetailSystem.Models.Entity
 
         [Required]
         public TicketBinding TicketBinding { get; set; }
+
+        [Required]
+        public decimal TicketPrice { get; set; }
     }
 }

@@ -172,6 +172,10 @@
     <Compile Include="Migrations\201812181643362_PoprawkiWModelu1.Designer.cs">
       <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201812302033515_DodanieCenyBiletu.cs" />
+    <Compile Include="Migrations\201812302033515_DodanieCenyBiletu.Designer.cs">
+      <DependentUpon>201812302033515_DodanieCenyBiletu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\CardTypeDictionary.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\DiscountTypeDictionary.cs" />
@@ -284,6 +288,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201812181643362_PoprawkiWModelu1.resx">
       <DependentUpon>201812181643362_PoprawkiWModelu1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812302033515_DodanieCenyBiletu.resx">
+      <DependentUpon>201812302033515_DodanieCenyBiletu.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
