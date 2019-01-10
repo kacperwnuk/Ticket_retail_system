@@ -1,6 +1,6 @@
 ﻿@model TicketRetailSystem.Models.Entity.User
 @{
-    ViewBag.Title = "SearchByUserId";
+    ViewBag.Title = "Wybierz użytkownika";
 }
 
 <h2>Wybierz użytkownika</h2>
@@ -10,6 +10,7 @@
     <div class="form-group">
         @Html.LabelFor(u => u.Id)
         @Html.TextBoxFor(u => u.Id, new { @class = "form-control" })
+        <br/>
         <button type="submit" class="btn btn-primary"> Wyszukaj </button>
     </div>
 }

@@ -1,16 +1,16 @@
 ﻿@model TicketRetailSystem.ViewModels.TicketTypeViewModel
 @{
-    ViewBag.Title = "GetAmountOfTickets";
+    ViewBag.Title = "Statystyka zakupionych biletów";
 }
 
 <h2>Statystyka zakupionych biletów</h2>
 
-<ul>
+<div class="panel-group">
     @foreach (var tt in Model.TicketZonesWithAmount)
     {
-        <li>Typ biletu : @tt.CardType</li>
-        <li>Ilosc zakupionych biletów : @tt.AmountOfTickets</li>
-        <li>--------------------------------------</li>
-
+        <div class="panel panel-default">
+            <div class="panel-heading">Typ biletu: @tt.CardType</div>
+            <div class="panel-body">Liczba zakupionych biletów: @tt.AmountOfTickets</div>
+        </div>
     }
-</ul>
+</div>
