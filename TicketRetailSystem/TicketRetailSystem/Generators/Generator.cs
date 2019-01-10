@@ -65,6 +65,42 @@ namespace TicketRetailSystem.Generators
             }
         }
 
+        private void UpdateTicketTypes()
+        {
+            var ticketTypesQuery = from tt in context.TicketTypes select tt;
+            var ticketTypes = ticketTypesQuery.ToArray();
+
+            foreach (TicketPeriod period in Enum.GetValues(typeof(TicketPeriod)))
+            {
+                foreach (Zone zone in Enum.GetValues(typeof(Zone)))
+                {
+                    foreach (DiscountType discountType in Enum.GetValues(typeof(DiscountType)))
+                    {
+                        bool found = false;
+                        foreach (TicketType tt in ticketTypes)
+                        {
+                            if (tt.TicketPeriod == period && tt.Zone == zone && tt.DiscountType == discountType)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            context.TicketTypes.Add(new TicketType()
+                            {
+                                TicketPeriod = period,
+                                Zone = zone,
+                                DiscountType = discountType
+                            }
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         private void GenerateTicketTypes()
         {
             // wszystkie strefy i wszystkie okresy (tylko ulgowe i normalne)
@@ -237,7 +273,9 @@ namespace TicketRetailSystem.Generators
 
         public void Run()
         {
-
+            /*
+            UpdateTicketTypes(); context.SaveChanges();
+            
             GenerateUsersAndCards(500); context.SaveChanges();
 
             GenerateTicketTypes(); context.SaveChanges();
@@ -254,6 +292,7 @@ namespace TicketRetailSystem.Generators
             }
 
             GenerateCardTickets(5, new DateTime(2018, 11, 11)); context.SaveChanges();
+            */
         }
     }
 }
