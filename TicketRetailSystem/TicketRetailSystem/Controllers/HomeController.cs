@@ -20,16 +20,7 @@ namespace TicketRetailSystem.Controllers
 
 
         public ActionResult Index()
-        {
-            using (var ctx = new RetailContext())
-            {
-                var stud = new User() { Name = "Bill" , Surname = "Fajny", PersonalId = "69696969669"};
-
-                ctx.Users.Add(stud);
-                ctx.SaveChanges();
-
-            }
-
+        { 
             return View();
         }
 

@@ -1,7 +1,12 @@
-﻿@model dynamic
+﻿@model TicketRetailSystem.ViewModels.BoughtTicketsViewModel
 
 @{
     ViewBag.Title = "Success";
 }
 
 <h2>Success</h2>
+
+@foreach (var ticketId in Model.TicketId)
+{
+	<label>@ticketId</label><br/>
+}

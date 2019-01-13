@@ -177,6 +177,7 @@
       <DependentUpon>201812302033515_DodanieCenyBiletu.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\DecimalModelBinder.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\CardTypeDictionary.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\DiscountTypeDictionary.cs" />
     <Compile Include="Models\Entity\DictionaryTypes\PaymentTypeDictionary.cs" />
@@ -196,7 +197,9 @@
     <Compile Include="Models\Enums\TicketBinding.cs" />
     <Compile Include="Models\Enums\Zone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\App\BoughtTicketsViewModel.cs" />
     <Compile Include="ViewModels\App\BuyTicketViewModel.cs" />
+    <Compile Include="ViewModels\App\TicketViewModel.cs" />
     <Compile Include="ViewModels\TestowyViewModel.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Compile Include="ViewModels\UserTicketsViewModel.cs" />
@@ -228,6 +231,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -262,6 +266,7 @@
     <Content Include="Views\App\Success.cshtml" />
     <Content Include="Views\App\Failure.cshtml" />
     <Compile Include="ViewModels\App\MessageViewModel.cs" />
+    <Content Include="Views\App\BuyETicket.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

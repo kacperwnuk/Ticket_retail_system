@@ -2,11 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Protocols;
+using System.Web.UI.WebControls;
+using Newtonsoft.Json;
 using TicketRetailSystem.Models.Entity;
 using TicketRetailSystem.Models.Enums;
 using TicketRetailSystem.ViewModels;
+using static System.Boolean;
 
 namespace TicketRetailSystem.Controllers
 {
@@ -26,15 +34,34 @@ namespace TicketRetailSystem.Controllers
         }
 
         [Route("buy")]
-        public ActionResult ShowBuyForm()
+        public ActionResult ShowBuyForm(String cardId)
         {
+            int cardIdNumber;
+            if (cardId != null)
+            {
+                try
+                {
+                    cardIdNumber = Int32.Parse(cardId);
+                }
+                catch (FormatException e)
+                {
+                    cardIdNumber = -1;
+                }
+            }
+            else
+            {
+                cardIdNumber = -1;
+            }
+
             var buyTicketViewModel = new BuyTicketViewModel
             {
+                CardId = cardIdNumber,
                 CardTypes = ctx.CardTypeDictionaries.ToList(),
                 DiscountTypes = ctx.DiscountTypeDictionaries.ToList(),
                 PaymentTypes = ctx.PaymentTypeDictionaries.ToList(),
                 TicketPeriods = ctx.TicketPeriodDictionaries.ToList(),
-                Zones = ctx.ZoneDictionaries.ToList()
+                Zones = ctx.ZoneDictionaries.ToList(),
+                TicketTypes = ctx.TicketTypes.ToList()
             };
             return View(buyTicketViewModel);
         }
@@ -55,22 +82,55 @@ namespace TicketRetailSystem.Controllers
         [HttpPost]
         public ActionResult Finalize(BuyTicketViewModel buyTicketViewModel)
         {
-            if (!Validate(buyTicketViewModel.TicketType))
-                return RedirectToAction("Failure", "App", new MessageViewModel { Message = "Oops%20something%20went%20wrong" });
-            List<Ticket> tickets = new List<Ticket>();
-            for (int i = 0; i < buyTicketViewModel.NumberOfTickets; ++i)
+            var price = GetPrice(buyTicketViewModel.TicketType);
+            var numberOfTickets = buyTicketViewModel.NumberOfTickets;
+            var cardId = buyTicketViewModel.CardId;
+            var card = cardId != 0;
+            var travelCard = GetCard(cardId);
+            if (price == null || (card && travelCard == null && numberOfTickets != 1) ||
+                numberOfTickets < 1 || numberOfTickets > 10)
             {
+                var message = HttpUtility.UrlEncode("Oops something went wrong", new UTF8Encoding());
+                return RedirectToAction("Failure", "App", new MessageViewModel {Message = message});
+            }
+
+            List<Ticket> tickets = new List<Ticket>();
+            if (!card)
+            {
+                for (var i = 0; i < numberOfTickets; ++i)
+                {
+                    tickets.Add(new Ticket
+                    {
+                        TicketType = buyTicketViewModel.TicketType,
+                        IssuedPrice = price.Value * numberOfTickets
+                    });
+                }
+            }
+            else
+            {
+                var lastTicket = GetLastTicketView(cardId);
+                var validFromDate = DateTime.Now;
+                if (lastTicket != null && lastTicket.Date > validFromDate)
+                {
+                    validFromDate = lastTicket.Date;
+                }
+
                 tickets.Add(new Ticket
                 {
-                    TicketType = buyTicketViewModel.TicketType
+                    TicketType = ctx.TicketTypes.Find(buyTicketViewModel.TicketType.Id),
+                    IssuedPrice = price.Value * numberOfTickets,
+                    ValidFromDate = validFromDate,
+                    ValidToDate =
+                        validFromDate.AddMinutes(
+                            SuperDuperDumbDictionary[buyTicketViewModel.TicketType.TicketPeriod.ToString()]),
+                    Card = travelCard
                 });
             }
 
-            var numberFormatInfo = new NumberFormatInfo {NumberDecimalSeparator = "."};
             var transaction = new Transaction
             {
                 Date = DateTime.Now,
-                TotalPrice = Decimal.Parse("2.0", numberFormatInfo),
+                TotalPrice = price.Value * numberOfTickets,
                 Tickets = tickets,
                 PaymentType = buyTicketViewModel.PaymentType
             };
@@ -82,13 +142,25 @@ namespace TicketRetailSystem.Controllers
 
             ctx.Transactions.Add(transaction);
 
-            // ctx.SaveChanges();
+            ctx.SaveChanges();
+
+            List<int> boughtTickets = new List<int>();
+            foreach (var ticket in tickets)
+            {
+                boughtTickets.Add(ticket.Id);
+            }
+            TempData["BoughtTickets"] = boughtTickets;
             return RedirectToAction("Success", "App");
         }
 
         public ActionResult Success()
         {
-            return View();
+            var boughtTickets = TempData["BoughtTickets"] as List<int>;
+            var viewModel = new BoughtTicketsViewModel
+            {
+                TicketId = boughtTickets
+            };
+            return View(viewModel);
         }
 
         public ActionResult Failure(MessageViewModel viewModel)
@@ -96,18 +168,133 @@ namespace TicketRetailSystem.Controllers
             return View(viewModel);
         }
 
-        private Boolean Validate(TicketType ticketType)
+        public ActionResult BuyETicket()
         {
-            var type = (from tt in ctx.TicketTypes
+            var buyTicketViewModel = new BuyTicketViewModel
+            {
+                CardTypes = ctx.CardTypeDictionaries.ToList(),
+                DiscountTypes = ctx.DiscountTypeDictionaries.ToList(),
+                PaymentTypes = ctx.PaymentTypeDictionaries.ToList(),
+                TicketPeriods = ctx.TicketPeriodDictionaries.ToList(),
+                Zones = ctx.ZoneDictionaries.ToList(),
+                TicketTypes = ctx.TicketTypes.ToList()
+            };
+            return View(buyTicketViewModel);
+        }
+
+        [HttpGet]
+        public JsonResult CheckIfCardExists(string cardId)
+        {
+            int cardIdNumber;
+            try
+            {
+                cardIdNumber = Int32.Parse(cardId);
+            }
+            catch (FormatException e)
+            {
+                return Json(FalseString, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(GetCard(cardIdNumber) != null ? TrueString : FalseString, JsonRequestBehavior.AllowGet);
+        }
+
+        TransportCard GetCard(int cardId)
+        {
+            //            var cardCount = (from c in ctx.TransportCards
+            //                where c.Id == cardId
+            //                select new
+            //                {
+            //                    Id = c.Id
+            //                }).Count();
+            //            return cardCount == 1;
+            return ctx.TransportCards.Find(cardId);
+        }
+
+        [HttpGet]
+        public JsonResult GetLastTicket(string cardId)
+        {
+            int cardIdNumber;
+            try
+            {
+                cardIdNumber = Int32.Parse(cardId);
+            }
+            catch (FormatException e)
+            {
+                return Json(FalseString, JsonRequestBehavior.AllowGet);
+            }
+
+            var ticketView = GetLastTicketView(cardIdNumber);
+            ticketView.DateString = ticketView.Date.ToString(new System.Globalization.CultureInfo("pl-PL"));
+
+            return Json(ticketView, JsonRequestBehavior.AllowGet);
+        }
+
+        class TicketView
+        {
+            public DateTime Date { get; set; }
+            public String DateString { get; set; }
+            public String Zone { get; set; }
+            public String DiscountType { get; set; }
+            public String TicketPeriod { get; set; }
+            public int TicketTypeId { get; set; }
+        }
+
+        TicketView GetLastTicketView(int cardId)
+        {
+            var ticket = (from t in ctx.Tickets
+                where t.Card.Id == cardId && t.ValidToDate != null
+                select new TicketView
+                {
+                    Date = t.ValidToDate ?? DateTime.MinValue,
+                    Zone = t.TicketType.Zone.ToString(),
+                    DiscountType = t.TicketType.DiscountType.ToString(),
+                    TicketPeriod = t.TicketType.TicketPeriod.ToString(),
+                    TicketTypeId = t.TicketType.Id
+                }).OrderByDescending(a => a.Date).FirstOrDefault();
+            return ticket;
+        }
+
+        private Price GetPrice(TicketType ticketType)
+        {
+            var price = (from tt in ctx.TicketTypes
                 where tt.TicketPeriod == ticketType.TicketPeriod &&
                       tt.DiscountType == ticketType.DiscountType &&
                       tt.Zone == ticketType.Zone && tt.TicketBinding == ticketType.TicketBinding
-                select new
+                select new Price
                 {
-                    Id = tt.Id
-                }).Count();
-//            return type > 0;
-            return false;
+                    Value = tt.TicketPrice
+                }).FirstOrDefault();
+            return price;
         }
+
+        class Price
+        {
+            public Decimal Value { get; set; }
+        }
+
+        private Dictionary<String, int> SuperDuperDumbDictionary = new Dictionary<String, int>()
+        {
+            {
+                "TwentyMinutes", 20
+            },
+
+            {
+                "Hour", 60
+            },
+
+            {"FourHours", 240},
+            {"Day", 24 * 60},
+            {
+                "TwoDays", 48 * 60
+            },
+
+            {
+                "Month", 30 * 24 * 60
+            },
+
+            {
+                "ThreeMonths", 90 * 24 * 60
+            }
+        };
     }
 }

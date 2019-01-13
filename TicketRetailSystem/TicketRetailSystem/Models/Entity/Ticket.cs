@@ -17,7 +17,7 @@ namespace TicketRetailSystem.Models.Entity
 
         public DateTime? ValidToDate { get; set; }
 
-        public virtual TransportCard Card {get; set; }
+        public virtual TransportCard Card { get; set; }
 
         [Required]
         public virtual TicketType TicketType { get; set; }
