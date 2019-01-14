@@ -1,6 +1,6 @@
 ﻿@model TicketRetailSystem.ViewModels.UserTicketsViewModel
 @{
-    ViewBag.Title = "GetByUserIdView";
+    ViewBag.Title = "Bilety zakupione przez użytkownika";
 }
 
 <h2>Bilety zakupione przez użytkownika</h2>
@@ -8,24 +8,52 @@
 
 @if (Model.Tickets.Count != 0)
 {
-    <p>Id uzytkownika: @Model.Tickets.First().UserId</p> 
-    <p>Imie uzytkownika: @Model.Tickets.First().UserName</p> 
-    <p>Nazwisko uzytkownika: @Model.Tickets.First().UserSurname</p> 
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">Dane użytkownika</div>
+            <div class="panel-body">
+                <p>ID: @Model.Tickets.First().UserId</p>
+                <p>Imię: @Model.Tickets.First().UserName</p>
+                <p>Nazwisko: @Model.Tickets.First().UserSurname</p>
+            </div>
+        </div>
+    </div>
 
-    <ul>
-       @foreach (var ticket in Model.Tickets)
-       {
-           <li>Typ karty : @ticket.CardType</li>
-           <li>Czy aktywna : @ticket.IsActive</li>
-           <li>Rodzaj biletu : @ticket.TicketType.DiscountType</li>
-           <li>Wazny od : @ticket.ValidFromDate</li>
-           <li>--------------------------------------</li>
-       }
-    </ul>
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">Bilety użytkownika</div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Typ karty</th>
+                            <th scope="col">Czy aktywna</th>
+                            <th scope="col">Rodzaj biletu</th>
+                            <th scope="col">Ważny od</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model.Tickets)
+                        {
+                            <tr>
+                                <th scope="row">@ticket.CardType</th>
+                                <td>@ticket.IsActive</td>
+                                <td>@ticket.TicketType.DiscountType</td>
+                                <td>@ticket.ValidFromDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+
 
 }
 else
 {
-    <br/>
+    <br />
     <p>Brak użytkownika o podanym ID</p>
 }

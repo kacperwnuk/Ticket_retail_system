@@ -1,6 +1,6 @@
 ﻿@model TicketRetailSystem.ViewModels.DatesViewModel
     @{
-        ViewBag.Title = "SearchForAmountOfPeople";
+        ViewBag.Title = "Wyszukiwanie ile osób kupiło bilety na daną strefę";
     }
 
     <h2> Wyszukiwanie ile osób kupiło bilet na daną strefę </h2>
@@ -8,10 +8,11 @@
     @using (Html.BeginForm("GetAmountOfPeople", "Ticket", FormMethod.Post, Url.Action("ticket/people")))
     {
         <div class="form-group">
-            <label> Data rozpoczecia </label>
+            <label> Data rozpoczecia (YYYY-MM-DD) </label>
             @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
-            <label> Data zakonczenia </label>
+            <label> Data zakonczenia (YYYY-MM-DD)</label>
             @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
+            <br/>
             <button type="submit" class="btn btn-primary"> Wyszukaj </button>
         </div>
     }

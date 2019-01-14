@@ -1,29 +1,42 @@
 ﻿@model TicketRetailSystem.ViewModels.TransactionViewModel
 @{
-    ViewBag.Title = "Transakcje w dniu " ;
+    ViewBag.Title = "Transakcje w dniu ";
 }
+
 
 
 @if (Model.Transcations.Count != 0)
 {
-    <h2>Transakcje w dniu : @Model.Transcations.First().TransactionDate.ToString("dd.MM.yyyy")</h2>
+    <h2>Transakcje w dniu: @Model.Transcations.First().TransactionDate.ToString("dd.MM.yyyy")</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Typ biletu</th>
+                <th scope="col">Cena biletu</th>
+                <th scope="col">Sposób zapłaty</th>
+                <th scope="col">ID karty</th>
+                <th scope="col">ID użytkownika</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tran in Model.Transcations)
+            {
+                <tr>
+                    <th scope="row">@tran.TicketId</th>
+                    <td>@tran.TicketType.TicketPeriod</td>
+                    <td>@tran.TicketIssuedPrice</td>
+                    <td>@tran.PaymentType</td>
+                    <td>@tran.CardId</td>
+                    <td>@tran.UserId</td>
+                </tr>
+            }    
+        </tbody>
+    </table>
 
-    <ul>
-        @foreach (var tran in Model.Transcations)
-        {
-            <li>ID : @tran.TicketId</li>
-            <li>Typ biletu : @tran.TicketType.TicketPeriod</li>
-            <li>Cena biletu : @tran.TicketIssuedPrice</li>
-            <li>Sposob zaplaty : @tran.PaymentType</li>
-            <li>ID karty : @tran.CardId</li>
-            <li>ID uzytkownika : @tran.UserId</li>
-            <li>--------------------------------------</li>
-        
-        }
-    </ul>
 }
 else
 {
-    <br/>
+    <br />
     <p>Nie było żadnych transakcji w danym dniu!</p>
 }

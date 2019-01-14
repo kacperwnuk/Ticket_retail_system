@@ -1,6 +1,6 @@
 ﻿@model TicketRetailSystem.ViewModels.DatesViewModel
 @{
-    ViewBag.Title = "SearchForProfit";
+    ViewBag.Title = "Policz zysk ze sprzedaży biletów";
 }
 
 <h2>Policz zysk ze sprzedaży biletów</h2>
@@ -8,10 +8,11 @@
 @using (Html.BeginForm("GetTotalCostOfTickets", "Ticket", FormMethod.Post, Url.Action("ticket/totalProfit")))
 {
     <div class="form-group">
-        <label> Data rozpoczecia </label>
+        <label> Data rozpoczecia (YYYY-MM-DD)</label>
         @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
-        <label> Data zakonczenia </label>
+        <label> Data zakonczenia (YYYY-MM-DD)</label>
         @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
+        <br />
         <button type="submit" class="btn btn-primary"> Wyszukaj </button>
     </div>
 }
