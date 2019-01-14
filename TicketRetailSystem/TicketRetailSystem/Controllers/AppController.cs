@@ -85,7 +85,7 @@ namespace TicketRetailSystem.Controllers
             var price = GetPrice(buyTicketViewModel.TicketType);
             var numberOfTickets = buyTicketViewModel.NumberOfTickets;
             var cardId = buyTicketViewModel.CardId;
-            var card = cardId != 0;
+            var card = cardId != -1;
             var travelCard = GetCard(cardId);
             if (price == null || (card && travelCard == null && numberOfTickets != 1) ||
                 numberOfTickets < 1 || numberOfTickets > 10)
@@ -101,7 +101,7 @@ namespace TicketRetailSystem.Controllers
                 {
                     tickets.Add(new Ticket
                     {
-                        TicketType = buyTicketViewModel.TicketType,
+                        TicketType = ctx.TicketTypes.Find(buyTicketViewModel.TicketType.Id),
                         IssuedPrice = price.Value * numberOfTickets
                     });
                 }
