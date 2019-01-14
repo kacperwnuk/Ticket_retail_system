@@ -1,0 +1,109 @@
+﻿@model TicketRetailSystem.ViewModels.BuyTicketViewModel
+
+@{
+    ViewBag.Title = "title";
+}
+
+<script>
+    function checkCard() {
+        var card = $("#cardNumber").val();
+        $.get({
+            url: "/App/CheckIfCardExists",
+            data: { cardId: card },
+            success: function(response) {
+                console.log(response);
+                if (response === "False") {
+                    alert("No card with given ID was found in the system");
+                } else {
+                    $.get({
+                        url: "/App/GetLastTicket",
+                        data: { cardId: card },
+                        success: function(response) {
+                            console.log(response);
+                            if (response != null) {
+                                $("#ValidToDate").text(response.DateString);
+                                var date = new Date(parseInt(response.DateString.substr(6, 9)),
+                                    parseInt(response.DateString.substr(3, 5)) - 1,
+                                    parseInt(response.DateString.substr(0, 2)),
+                                    parseInt(response.DateString.substr(11, 13)) + 1,
+                                    parseInt(response.DateString.substr(14, 16)),
+                                    parseInt(response.DateString.substr(17, 19)));
+                                if (date > new Date()) {
+                                    $("#same_ticket").text("Prolong");
+                                } else {
+                                    $("#same_ticket").text("Refresh");
+                                }
+                                $("#TicketType_TicketPeriod").text(response.TicketPeriod);
+                                $("#TicketType_Zone").text(response.Zone);
+                                $("#TicketType_DiscountType").text(response.DiscountType);
+                                $("#TicketType_Id").val(response.TicketTypeId);
+                                $("#NumberOfTickets").val(1);
+                                $("#CardId").val(card);
+                                $("#lastTicket").css("display", "block");
+                            } else {
+                                $("#noLastTicket").css("display", "block");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function buyNew() {
+        var card = $("#cardNumber").val();
+        window.location = "/app/buy?cardId=" + card;
+
+    }
+
+    function showPaymentOptions() {
+        $("#payments").css("display", "block");
+    }
+</script>
+
+<h2>Buy ticket</h2>
+
+<div class="form-group">
+    <label for="cardNumber">Card number</label>
+    <input type="text" id="cardNumber" class="form-control"/>
+</div>
+<button class="btn btn-primary" onclick="checkCard()">Next</button>
+
+<div id="lastTicket" style="display: none">
+    @using (Html.BeginForm("Finalize", "App", FormMethod.Post))
+    {
+        <label>Valid to date:</label>
+        <label id="ValidToDate"></label>
+        <br/>
+        @Html.HiddenFor(m => m.TicketType.Id)
+        @Html.HiddenFor(m => m.NumberOfTickets)
+        @Html.HiddenFor(m => m.CardId)
+        <label>Ticket period: </label>
+        <label id="TicketType_TicketPeriod"></label>
+        <br/>
+        <label>Zone: </label>
+        <label id="TicketType_Zone"></label>
+        <br/>
+        <label>Discount: </label>
+        <label id="TicketType_DiscountType"></label>
+        <br/>
+        <button class="btn btn-primary" onclick="buyNew();" type="button">Buy new</button>
+        <button class="btn btn-primary" onclick="showPaymentOptions();" type="button" id="same_ticket"></button>
+        <div id="payments" style="display: none">
+            <label>Please choose payment method: </label>
+            @foreach (var payment in Model.PaymentTypes)
+            {
+                <div class="form-check">
+                    @Html.RadioButtonFor(m => m.PaymentType, payment.PaymentTypeId, new {@class = "form-check-input", @Id = payment.Description})
+                    <label for="@payment.Description" class="form-check-label">@payment.Description</label>
+                </div>
+            }
+            <input class="btn btn-primary" type="submit" value="Buy"/>
+        </div>
+    }
+</div>
+
+<div id="noLastTicket" style="display: none">
+    No previous tickets found
+    <button class="btn btn-primary" onclick="buyNew();" type="button">Buy new</button>
+</div>

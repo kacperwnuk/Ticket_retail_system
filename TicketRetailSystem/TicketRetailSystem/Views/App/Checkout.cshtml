@@ -1,0 +1,48 @@
+﻿@using System.Globalization
+@model TicketRetailSystem.ViewModels.BuyTicketViewModel
+
+@{
+    ViewBag.Title = "Checkout";
+}
+
+<h2>Checkout</h2>
+<div>
+	@if (Model.CardId != -1)
+	{
+	    @Html.Label("Card Id:")
+	    @Html.Label(Model.CardId.ToString())
+	    <br/>
+	}
+    @Html.Label("Zone:")
+    @Html.Label(Model.TicketType.Zone.ToString())
+    <br/>
+    @Html.Label("Ticket duration:")
+    @Html.Label(Model.TicketType.TicketPeriod.ToString())
+    <br/>
+    @Html.Label("Discount:")
+    @Html.Label(Model.TicketType.DiscountType.ToString())
+    <br/>
+    @Html.Label("Number of tickets:")
+    @Html.Label(Model.NumberOfTickets.ToString())
+    <br/>
+    @Html.Label("Payment type:")
+    @Html.Label(Model.PaymentType.ToString())
+    <br/>
+    @Html.Label("Total price:")
+    @Html.Label(Model.TicketType.TicketPrice.ToString(new CultureInfo("pl-PL")) + " zł")
+    <br/>
+
+    @using (Html.BeginForm("Finalize", "App", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => Model.NumberOfTickets, Model.NumberOfTickets)
+        @Html.HiddenFor(m => Model.TicketType.DiscountType, Model.TicketType.DiscountType)
+        @Html.HiddenFor(m => Model.TicketType.TicketPeriod, Model.TicketType.TicketPeriod)
+        @Html.HiddenFor(m => Model.TicketType.Zone, Model.TicketType.Zone)
+        @Html.HiddenFor(m => Model.PaymentType, Model.PaymentType)
+        @Html.HiddenFor(m => m.CardId, Model.CardId)
+        @Html.HiddenFor(m => m.TicketType.Id, Model.TicketType.Id)
+        <button type="submit" class="btn btn-primary">Pay</button>
+        <button type="cancel" class="btn btn-primary">Cancel</button>
+    }
+
+</div>

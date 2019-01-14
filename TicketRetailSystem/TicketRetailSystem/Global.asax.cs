@@ -16,6 +16,8 @@ namespace TicketRetailSystem
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ModelBinders.Binders.Add(typeof(decimal), new ModelBinder.DecimalModelBinder());
+            ModelBinders.Binders.Add(typeof(decimal?), new ModelBinder.DecimalModelBinder());
         }
     }
 }

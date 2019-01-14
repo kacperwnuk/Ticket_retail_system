@@ -1,0 +1,124 @@
+﻿@model TicketRetailSystem.ViewModels.BuyTicketViewModel
+@{
+    ViewBag.Title = "Buy Ticket";
+}
+
+<script>
+
+    var priceList = [];
+
+    $(document).ready(function() {
+        @foreach (var type in @Model.TicketTypes)
+        {
+            <text>
+                priceList.push([
+                    '@type.TicketPeriod', '@type.Zone', '@type.DiscountType', '@type.TicketPrice', '@type.Id'
+                ]);
+            </text>
+        }
+        console.log(priceList);
+        selected();
+    });
+
+
+    var maxTickets = 10, minTickets = 1;
+
+    function validate() {
+        setInputFilter(document.getElementById("NumberOfTickets"),
+            function(value) {
+                integerValue = parseInt(value);
+                return /^\d*\.?\d*$/.test(value) && integerValue >= minTickets && integerValue <= maxTickets;
+            });
+    }
+
+    var priceValue = 0;
+    var numberOfTickets = 1;
+
+    function updatePrice() {
+        var priceLabel = document.getElementById("price");
+        var price = (parseFloat(priceValue.replace(",", ".")) * parseFloat(numberOfTickets)).toFixed(2);
+        priceLabel.innerHTML = price + " zł";
+        $("#TicketType_TicketPrice").val(price);
+    }
+
+    function plus() {
+        var element = document.getElementById("NumberOfTickets");
+        if (parseInt(element.value) < maxTickets) {
+            numberOfTickets = parseInt(element.value) + 1;
+            element.value = numberOfTickets.toString(10);
+        }
+        updatePrice();
+    }
+
+    function minus() {
+        var element = document.getElementById("NumberOfTickets");
+        if (parseInt(element.value) > minTickets) {
+            numberOfTickets = parseInt(element.value) - 1;
+            element.value = numberOfTickets.toString(10);
+        }
+        updatePrice();
+    }
+
+    function selected() {
+        var selectedPeriod = (document.getElementById("TicketType_TicketPeriod")).value;
+        var selectedZone = (document.getElementById("TicketType_Zone")).value;
+        var selectedDiscount = (document.getElementById("TicketType_DiscountType")).value;
+        for (var i = 0; i < priceList.length; ++i) {
+            if ((selectedPeriod === priceList[i][0]) &&
+                (selectedZone === priceList[i][1]) &&
+                (selectedDiscount === priceList[i][2])) {
+                priceValue = priceList[i][3];
+                $("#TicketType_Id").val(priceList[i][4]);
+                console.log(priceValue);
+            }
+        }
+        updatePrice();
+    }
+</script>
+
+<h2>Kup bilet</h2>
+
+@if (Model.CardId != -1)
+{
+    @Html.LabelFor(m => m.CardId)
+    @Html.Label(": " + Model.CardId)
+}
+
+@using (Html.BeginForm("BuyTicket", "App", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.CardId, Model.CardId)
+    @Html.HiddenFor(m => m.TicketType.Id)
+    @Html.HiddenFor(m => m.TicketType.TicketPrice)
+    ;
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TicketPeriods)
+        @Html.DropDownListFor(m => m.TicketType.TicketPeriod, new SelectList(Model.TicketPeriods, "TicketPeriodId", "Description"), new {@class = "form-control", onchange = "selected();"})
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Zones)
+        @Html.DropDownListFor(m => m.TicketType.Zone, new SelectList(Model.Zones, "ZoneId", "Description"), new {@class = "form-control", onchange = "selected();"})
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.DiscountTypes)
+        @Html.DropDownListFor(m => m.TicketType.DiscountType, new SelectList(Model.DiscountTypes, "DiscountTypeId", "Description"), new {@class = "form-control", onchange = "selected();"})
+    </div>
+
+    <div>
+        <button class="btn" type="button" onclick="minus()">-</button>
+        @Html.TextBoxFor(m => m.NumberOfTickets, new {@class = "form-control", style = "display: inline; width: 50px; text-align: center;", Value = "1", Onfocus = "validate();"})
+        <button class="btn" type="button" onclick="plus()">+</button>
+    </div>
+
+    foreach (var payment in Model.PaymentTypes)
+    {
+        <div class="form-check">
+            @Html.RadioButtonFor(m => m.PaymentType, payment.PaymentTypeId, new {@class = "form-check-input", @Id = payment.Description})
+            <label for="@payment.Description" class="form-check-label">@payment.Description</label>
+        </div>
+    }
+
+    <label id="price">0.00 zł</label>
+
+    <input type="submit" class="btn btn-primary" value="Buy">
+}
