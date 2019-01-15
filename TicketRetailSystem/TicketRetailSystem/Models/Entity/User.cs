@@ -9,7 +9,7 @@ namespace TicketRetailSystem.Models.Entity
 {
     public class User
     {
-        [DisplayName("Id użytkownika")]
+        [DisplayName("User id")]
         public int Id { get; set; }
 
         [Required]

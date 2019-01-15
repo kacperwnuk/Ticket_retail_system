@@ -3,16 +3,16 @@
     ViewBag.Title = "Zlicz bilety";
 }
 
-<h2>Zlicz bilety</h2>
+<h2>Count tickets</h2>
 
 @using (Html.BeginForm("GetAmountOfTickets", "Ticket", FormMethod.Post, Url.Action("ticket/ticketType")))
 {
     <div class="form-group">
-        <label> Data rozpoczecia (YYYY-MM-DD)</label>
+        <label> Begin Date (YYYY-MM-DD)</label>
         @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
-        <label> Data zakonczenia (YYYY-MM-DD)</label>
+        <label> End date (YYYY-MM-DD)</label>
         @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
         <br/>
-        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+        <button type="submit" class="btn btn-primary"> Search </button>
     </div>
 }

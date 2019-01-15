@@ -3,16 +3,16 @@
         ViewBag.Title = "Wyszukiwanie ile osób kupiło bilety na daną strefę";
     }
 
-    <h2> Wyszukiwanie ile osób kupiło bilet na daną strefę </h2>
+    <h2> Count how many people bought tickets for specific zone </h2>
 
     @using (Html.BeginForm("GetAmountOfPeople", "Ticket", FormMethod.Post, Url.Action("ticket/people")))
     {
         <div class="form-group">
-            <label> Data rozpoczecia (YYYY-MM-DD) </label>
+            <label> Begin date (YYYY-MM-DD) </label>
             @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
-            <label> Data zakonczenia (YYYY-MM-DD)</label>
+            <label> End date (YYYY-MM-DD)</label>
             @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
             <br/>
-            <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+            <button type="submit" class="btn btn-primary"> Search </button>
         </div>
     }

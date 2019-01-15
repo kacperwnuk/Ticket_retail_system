@@ -7,16 +7,16 @@
 
 @if (Model.Transcations.Count != 0)
 {
-    <h2>Transakcje w dniu: @Model.Transcations.First().TransactionDate.ToString("dd.MM.yyyy")</h2>
+    <h2>Transactions in: @Model.Transcations.First().TransactionDate.ToString("dd.MM.yyyy")</h2>
     <table class="table table-striped">
         <thead>
             <tr>
                 <th scope="col">ID</th>
-                <th scope="col">Typ biletu</th>
-                <th scope="col">Cena biletu</th>
-                <th scope="col">Sposób zapłaty</th>
-                <th scope="col">ID karty</th>
-                <th scope="col">ID użytkownika</th>
+                <th scope="col">Ticket type</th>
+                <th scope="col">Price</th>
+                <th scope="col">Payment type</th>
+                <th scope="col">ID card</th>
+                <th scope="col">ID user</th>
             </tr>
         </thead>
         <tbody>
