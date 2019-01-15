@@ -3,7 +3,7 @@
     ViewBag.Title = "Wybierz użytkownika";
 }
 
-<h2>Wybierz użytkownika</h2>
+<h2>Choose user</h2>
 
 @using (Html.BeginForm("GetByUserId", "Ticket", FormMethod.Post, Url.Action("ticket", "user")))
 {
@@ -11,7 +11,7 @@
         @Html.LabelFor(u => u.Id)
         @Html.TextBoxFor(u => u.Id, new { @class = "form-control" })
         <br/>
-        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+        <button type="submit" class="btn btn-primary"> Search </button>
     </div>
 }
 

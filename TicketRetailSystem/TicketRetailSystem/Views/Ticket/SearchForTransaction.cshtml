@@ -3,14 +3,14 @@
     ViewBag.Title = "Wybierz datę";
 }
 
-<h2>Wybierz datę</h2>
+<h2>Choose date</h2>
 
 @using (Html.BeginForm("GetByDate", "Ticket", FormMethod.Post, Url.Action("ticket/transactions")))
 {
     <div class="form-group">
-        <label>Data transakcji (YYYY-MM-DD)</label>
+        <label>Date of transaction (YYYY-MM-DD)</label>
         @Html.TextBoxFor(d => d.CurrentDate, new { @class = "form-control" })
         <br />
-        <button type="submit" class="btn btn-primary"> Wyszukaj </button>
+        <button type="submit" class="btn btn-primary"> Search </button>
     </div>
 }

@@ -3,33 +3,33 @@
     ViewBag.Title = "Bilety zakupione przez użytkownika";
 }
 
-<h2>Bilety zakupione przez użytkownika</h2>
+<h2>Tickets bought by user</h2>
 
 
 @if (Model.Tickets.Count != 0)
 {
     <div class="panel-group">
         <div class="panel panel-default">
-            <div class="panel-heading">Dane użytkownika</div>
+            <div class="panel-heading">User info</div>
             <div class="panel-body">
                 <p>ID: @Model.Tickets.First().UserId</p>
-                <p>Imię: @Model.Tickets.First().UserName</p>
-                <p>Nazwisko: @Model.Tickets.First().UserSurname</p>
+                <p>Name: @Model.Tickets.First().UserName</p>
+                <p>Surname: @Model.Tickets.First().UserSurname</p>
             </div>
         </div>
     </div>
 
     <div class="panel-group">
         <div class="panel panel-default">
-            <div class="panel-heading">Bilety użytkownika</div>
+            <div class="panel-heading">User tickets</div>
             <div class="panel-body">
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Typ karty</th>
-                            <th scope="col">Czy aktywna</th>
-                            <th scope="col">Rodzaj biletu</th>
-                            <th scope="col">Ważny od</th>
+                            <th scope="col">Card type</th>
+                            <th scope="col">Is active</th>
+                            <th scope="col">Ticket type</th>
+                            <th scope="col">Valid from</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,5 +55,5 @@
 else
 {
     <br />
-    <p>Brak użytkownika o podanym ID</p>
+    <p>No user with this ID</p>
 }
