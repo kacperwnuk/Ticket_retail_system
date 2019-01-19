@@ -1,18 +1,25 @@
-﻿@model TicketRetailSystem.ViewModels.DatesViewModel
+﻿@using TicketRetailSystem.Models.Enums
+@model TicketRetailSystem.ViewModels.ChooseListViewModel
     @{
-        ViewBag.Title = "Wyszukiwanie ile osób kupiło bilety na daną strefę";
+        ViewBag.Title = "";
     }
 
-    <h2> Count how many people bought tickets for specific zone </h2>
+    <h2> Search in database </h2>
 
     @using (Html.BeginForm("GetAmountOfPeople", "Ticket", FormMethod.Post, Url.Action("ticket/people")))
     {
-        <div class="form-group">
-            <label> Begin date (YYYY-MM-DD) </label>
-            @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
-            <label> End date (YYYY-MM-DD)</label>
-            @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
-            <br/>
-            <button type="submit" class="btn btn-primary"> Search </button>
-        </div>
+    <div class="form-group">
+        <label> Begin date (YYYY-MM-DD) </label>
+        @Html.TextBoxFor(t => t.StartTime, new { @class = "form-control" })
+        <label> End date (YYYY-MM-DD)</label>
+        @Html.TextBoxFor(t => t.EndTime, new { @class = "form-control" })
+        <label>Choose zone</label>
+        @Html.ListBoxFor(m => Model.Zone, new SelectList(Enum.GetValues(typeof(Zone))), new { @class = "form-control" })
+        <label>Choose payment type</label>
+        @Html.ListBoxFor(m => Model.PaymentType, new SelectList(Enum.GetValues(typeof(PaymentType))) ,new { @class = "form-control" })
+        <label>Choose discount type</label>
+        @Html.ListBoxFor(m => Model.DiscountType, new SelectList(Enum.GetValues(typeof(DiscountType))), new { @class = "form-control" })
+        <br />
+        <button type="submit" class="btn btn-primary"> Search </button>
+    </div>
     }

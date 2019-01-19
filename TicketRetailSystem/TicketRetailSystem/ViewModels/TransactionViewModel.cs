@@ -40,6 +40,32 @@ namespace TicketRetailSystem.ViewModels
         public DateTime EndTime { get; set; }
     }
 
+
+    public class ChooseListViewModel
+    {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public Zone? Zone { get; set; }
+        public PaymentType? PaymentType { get; set; }
+        public DiscountType? DiscountType { get; set; }
+    }
+
+    public class ChosenListViewModel
+    {
+        
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public IEnumerable<Zone> Zone { get; set; }
+        public IEnumerable<PaymentType> PaymentType { get; set; }
+        public IEnumerable<DiscountType> DiscountType { get; set; }
+
+        void func()
+        {
+            
+        }
+    }
+
+
     public class DateViewModel
     {
         public DateTime CurrentDate { get; set; }
@@ -51,4 +77,26 @@ namespace TicketRetailSystem.ViewModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
+
+    public class DetailedInfoViewModel
+    {
+        public int TransactionId { get; set; }
+        public PaymentType PaymentType { get; set; }
+        public int TicketId { get; set; }
+        public decimal TicketIssuedPrice { get; set; }
+        public TicketType TicketType { get; set; }
+        public int CardId { get; set; }
+        public int UserId { get; set; }
+        public DateTime TransactionDate { get; set; }
+    }
+
+
+    public class EverythingViewModel
+    {
+
+        public int TotalAmount { get; set; }
+        public IList<DetailedInfoViewModel> DetailedInfo { get; set; }
+
+    }
+
 }

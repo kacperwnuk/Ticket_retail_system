@@ -1,4 +1,4 @@
-﻿@model TicketRetailSystem.ViewModels.CountPeopleViewModel
+﻿@model TicketRetailSystem.ViewModels.EverythingViewModel
 @{
     ViewBag.Title = "Statystyka zakupu biletów";
 }
@@ -6,11 +6,38 @@
 <h2>Statistics of ticket sale </h2>
 
 <div class="panel-group">
-    @foreach (var tt in Model.TicketTypesWithAmount)
-    {
-        <div class="panel panel-default">
-            <div class="panel-heading">Zone : @tt.Zone</div>
-            <div class="panel-body">Amount of people: @tt.AmountOfPeople</div>
-        </div>
-    }
+    <p>Total number of records: @Model.TotalAmount</p>
+ 
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Ticket ID</th>
+                <th scope="col">ID user</th>
+                <th scope="col">ID card</th>
+                <th scope="col">Payment type</th>
+                <th scope="col">Discount type</th>
+                <th scope="col">Zone</th>
+                <th scope="col">Price</th>
+                <th scope="col">ID transaction</th>
+                <th scope="col">Transaction date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var di in Model.DetailedInfo)
+        {
+            <tr>
+                <th scope="row">@di.TicketId</th>
+                <td>@di.UserId</td>
+                <td>@di.CardId</td>
+                <td>@di.PaymentType</td>
+                <td>@di.TicketType.DiscountType</td>
+                <td>@di.TicketType.Zone</td>
+                <td>@di.TicketIssuedPrice</td>
+                <td>@di.TransactionId</td>
+                <td>@di.TransactionDate.ToString("dd.MM.yyyy")</td>
+            </tr>
+        }    
+        </tbody>
+    </table>
+
 </div>
