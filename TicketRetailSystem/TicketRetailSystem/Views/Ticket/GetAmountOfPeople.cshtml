@@ -6,10 +6,12 @@
 <h2>Statistics of ticket sale </h2>
 
 <div class="panel-group">
-    <p>Total number of records: @Model.TotalAmount</p>
- 
-    <table class="table table-striped">
-        <thead>
+    @if (Model != null)
+    {
+        <p>Total number of records: @Model.TotalAmount</p>
+
+        <table class="table table-striped">
+            <thead>
             <tr>
                 <th scope="col">Ticket ID</th>
                 <th scope="col">ID user</th>
@@ -21,23 +23,28 @@
                 <th scope="col">ID transaction</th>
                 <th scope="col">Transaction date</th>
             </tr>
-        </thead>
-        <tbody>
-        @foreach (var di in Model.DetailedInfo)
-        {
-            <tr>
-                <th scope="row">@di.TicketId</th>
-                <td>@di.UserId</td>
-                <td>@di.CardId</td>
-                <td>@di.PaymentType</td>
-                <td>@di.TicketType.DiscountType</td>
-                <td>@di.TicketType.Zone</td>
-                <td>@di.TicketIssuedPrice</td>
-                <td>@di.TransactionId</td>
-                <td>@di.TransactionDate.ToString("dd.MM.yyyy")</td>
-            </tr>
-        }    
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var di in Model.DetailedInfo)
+            {
+                <tr>
+                    <th scope="row">@di.TicketId</th>
+                    <td>@di.UserId</td>
+                    <td>@di.CardId</td>
+                    <td>@di.PaymentType</td>
+                    <td>@di.TicketType.DiscountType</td>
+                    <td>@di.TicketType.Zone</td>
+                    <td>@di.TicketIssuedPrice</td>
+                    <td>@di.TransactionId</td>
+                    <td>@di.TransactionDate.ToString("dd.MM.yyyy")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p> Należy wybrać jakąkolwiek wartość w polach strefa, typ płatności itp..</p>
+    }
 
 </div>

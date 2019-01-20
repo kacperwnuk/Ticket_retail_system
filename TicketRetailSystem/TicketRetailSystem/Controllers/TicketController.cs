@@ -95,6 +95,10 @@ namespace TicketRetailSystem.Controllers
         public ActionResult GetAmountOfPeople(ChosenListViewModel chosenData)
         {
             chosenData.EndTime = chosenData.EndTime.AddDays(1);
+            if (chosenData.Zone == null || chosenData.DiscountType == null || chosenData.PaymentType == null)
+            {
+                return View();
+            }
             var findEverything = new EverythingViewModel()
             {
                 DetailedInfo = (from tr in ctx.Transactions
@@ -103,7 +107,7 @@ namespace TicketRetailSystem.Controllers
                         join u in ctx.Users on c.User.Id equals u.Id
                         where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
                               && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
-                              && (!chosenData.DiscountType.Any()|| chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                              && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
                               && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
                               && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
                         select new DetailedInfoViewModel()
