@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Web.Mvc;
 using TicketRetailSystem.Models.Entity;
@@ -91,30 +92,49 @@ namespace TicketRetailSystem.Controllers
         //5.Użytkownik powinien móc sprawdzić ile osób kupiło bilet danego typu w określonym przez użytkownika przedziale czasu.
         [Route("ticket/people")]
         [HttpPost]
-        public ActionResult GetAmountOfPeople(DatesViewModel dates)
+        public ActionResult GetAmountOfPeople(ChosenListViewModel chosenData)
         {
-            var countPeople = new CountPeopleViewModel()
+            chosenData.EndTime = chosenData.EndTime.AddDays(1);
+            var findEverything = new EverythingViewModel()
             {
-                TicketTypesWithAmount = (from tr in ctx.Transactions
+                DetailedInfo = (from tr in ctx.Transactions
                         join t in ctx.Tickets on tr.Id equals t.Transaction.Id
                         join c in ctx.TransportCards on t.Card.Id equals c.Id
                         join u in ctx.Users on c.User.Id equals u.Id
-                        where DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
-                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
-                        group new {tr, t, c, u} by new
+                        where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
+                              && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                              && (!chosenData.DiscountType.Any()|| chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                              && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                              && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                        select new DetailedInfoViewModel()
                         {
-                            t.TicketType.Zone,
+                            TransactionId = tr.Id,
+                            PaymentType = tr.PaymentType,
+                            TicketId = t.Id,
+                            TicketIssuedPrice = t.IssuedPrice,
+                            TicketType = t.TicketType,
+                            CardId = c.Id,
+                            UserId = u.Id,
+                            TransactionDate = tr.Date
+
                         }
-                        into zones
-                        select new CountPeopleViewModel
-                        {
-                            Zone = zones.Key.Zone,
-                            AmountOfPeople = zones.Select(el => new {el.u.Id}).Distinct().Count()
-                        }
-                    ).ToList()
+                    ).ToList(),
+
+                TotalAmount = (from tr in ctx.Transactions
+                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                        join c in ctx.TransportCards on t.Card.Id equals c.Id
+                        join u in ctx.Users on c.User.Id equals u.Id
+                        where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
+                              && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                              && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                              && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                              && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                               select t.Id
+                    ).Count()
             };
 
-            return View(countPeople);
+           
+            return View(findEverything);
         }
 
         //6 Użytkownik powinien móc sprawdzić ile biletów zostało kupionych danego rodzaju(kartonikowy, legitymacja studencka, karta miejska itd.) w określonym przez użytkownika przedziale czasu.
