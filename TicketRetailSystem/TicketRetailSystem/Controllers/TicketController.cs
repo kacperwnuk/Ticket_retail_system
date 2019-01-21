@@ -121,7 +121,26 @@ namespace TicketRetailSystem.Controllers
                             UserId = u.Id,
                             TransactionDate = tr.Date
 
-                        }
+                        })
+                        .Union(from tr in ctx.Transactions
+                                join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                                where t.Card == null 
+                                      && DateTime.Compare(tr.Date, chosenData.StartTime) >= 0 
+                                      && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                                      && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                                      && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                                      && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                               select new DetailedInfoViewModel
+                                {
+                                    TransactionId = tr.Id,
+                                    PaymentType = tr.PaymentType,
+                                    TicketId = t.Id,
+                                    TicketIssuedPrice = t.IssuedPrice,
+                                    TicketType = t.TicketType,
+                                    CardId = -1,
+                                    UserId = -1,
+                                    TransactionDate = tr.Date
+                                }
                     ).ToList(),
 
                 TotalAmount = (from tr in ctx.Transactions

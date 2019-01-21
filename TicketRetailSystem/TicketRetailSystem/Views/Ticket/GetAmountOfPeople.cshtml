@@ -29,8 +29,22 @@
             {
                 <tr>
                     <th scope="row">@di.TicketId</th>
-                    <td>@di.UserId</td>
-                    <td>@di.CardId</td>
+                    <td>@if (di.UserId != -1)
+                        {
+                            @di.UserId
+                        }
+                        else
+                        {
+                            <p>-</p>
+                        }</td>
+                    <td>@if (di.CardId != -1)
+                        {
+                            @di.CardId
+                        }
+                        else
+                        {
+                            <p>-</p>
+                        }</td>
                     <td>@di.PaymentType</td>
                     <td>@di.TicketType.DiscountType</td>
                     <td>@di.TicketType.Zone</td>
