@@ -12,6 +12,7 @@ using System.Web.Services.Protocols;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using TicketRetailSystem.Models.Entity;
+using TicketRetailSystem.Models.Entity.DictionaryTypes;
 using TicketRetailSystem.Models.Enums;
 using TicketRetailSystem.ViewModels;
 using static System.Boolean;
@@ -37,32 +38,52 @@ namespace TicketRetailSystem.Controllers
         public ActionResult ShowBuyForm(String cardId)
         {
             int cardIdNumber;
+            
+            var buyTicketViewModel = new BuyTicketViewModel
+            {
+                CardTypes = ctx.CardTypeDictionaries.ToList(),
+                DiscountTypes = ctx.DiscountTypeDictionaries.ToList(),
+                PaymentTypes = ctx.PaymentTypeDictionaries.ToList(),
+                Zones = ctx.ZoneDictionaries.ToList(),
+                TicketTypes = ctx.TicketTypes.ToList()
+            };
             if (cardId != null)
             {
                 try
                 {
                     cardIdNumber = Int32.Parse(cardId);
+                    buyTicketViewModel.CardId = cardIdNumber;
+                    buyTicketViewModel.TicketPeriods = (from p in ctx.TicketPeriodDictionaries
+                        where p.TicketPeriodId == TicketPeriod.Month || p.TicketPeriodId == TicketPeriod.ThreeMonths
+                        select new TicketPeriodDto
+                        {
+                            TicketPeriodId = p.TicketPeriodId,
+                            Description = p.Description
+                        }).ToList();
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    cardIdNumber = -1;
+                    buyTicketViewModel.CardId =  -1;
+                    buyTicketViewModel.TicketPeriods = (from p in ctx.TicketPeriodDictionaries
+                        select new TicketPeriodDto
+                        {
+                            TicketPeriodId = p.TicketPeriodId,
+                            Description = p.Description
+                        }).ToList();
                 }
             }
             else
             {
-                cardIdNumber = -1;
+                buyTicketViewModel.CardId = -1;
+                buyTicketViewModel.TicketPeriods = (from p in ctx.TicketPeriodDictionaries
+                    select new TicketPeriodDto
+                    {
+                        TicketPeriodId = p.TicketPeriodId,
+                        Description = p.Description
+                    }).ToList();
             }
 
-            var buyTicketViewModel = new BuyTicketViewModel
-            {
-                CardId = cardIdNumber,
-                CardTypes = ctx.CardTypeDictionaries.ToList(),
-                DiscountTypes = ctx.DiscountTypeDictionaries.ToList(),
-                PaymentTypes = ctx.PaymentTypeDictionaries.ToList(),
-                TicketPeriods = ctx.TicketPeriodDictionaries.ToList(),
-                Zones = ctx.ZoneDictionaries.ToList(),
-                TicketTypes = ctx.TicketTypes.ToList()
-            };
+            
             return View(buyTicketViewModel);
         }
 
@@ -175,11 +196,23 @@ namespace TicketRetailSystem.Controllers
                 CardTypes = ctx.CardTypeDictionaries.ToList(),
                 DiscountTypes = ctx.DiscountTypeDictionaries.ToList(),
                 PaymentTypes = ctx.PaymentTypeDictionaries.ToList(),
-                TicketPeriods = ctx.TicketPeriodDictionaries.ToList(),
+                TicketPeriods = (from p in ctx.TicketPeriodDictionaries
+                                 where p.TicketPeriodId == TicketPeriod.Month || p.TicketPeriodId == TicketPeriod.ThreeMonths
+                                 select new TicketPeriodDto
+                                 {
+                                     TicketPeriodId = p.TicketPeriodId,
+                                     Description = p.Description
+                                 }).ToList(),
                 Zones = ctx.ZoneDictionaries.ToList(),
                 TicketTypes = ctx.TicketTypes.ToList()
             };
             return View(buyTicketViewModel);
+        }
+
+        public class TicketPeriodDto
+        {
+            public TicketPeriod TicketPeriodId { get; set; }
+            public string Description { get; set; }
         }
 
         [HttpGet]

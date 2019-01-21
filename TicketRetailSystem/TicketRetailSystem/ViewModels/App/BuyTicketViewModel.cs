@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TicketRetailSystem.Controllers;
 using TicketRetailSystem.Models.Entity;
 using TicketRetailSystem.Models.Entity.DictionaryTypes;
 using TicketRetailSystem.Models.Enums;
@@ -17,7 +18,7 @@ namespace TicketRetailSystem.ViewModels
         public IEnumerable<CardTypeDictionary> CardTypes { get; set; }
         public IEnumerable<DiscountTypeDictionary> DiscountTypes { get; set; }
         public IEnumerable<PaymentTypeDictionary> PaymentTypes { get; set; }
-        public IEnumerable<TicketPeriodDictionary> TicketPeriods { get; set; }
+        public IEnumerable<AppController.TicketPeriodDto> TicketPeriods { get; set; }
         public IEnumerable<ZoneDictionary> Zones { get; set; }
         public IEnumerable<TicketType> TicketTypes { get; set; }
     }

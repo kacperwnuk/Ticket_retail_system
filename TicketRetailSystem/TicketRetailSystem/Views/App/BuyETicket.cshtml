@@ -33,9 +33,12 @@
                                 } else {
                                     $("#same_ticket").text("Refresh");
                                 }
-                                $("#TicketType_TicketPeriod").text(response.TicketPeriod);
-                                $("#TicketType_Zone").text(response.Zone);
-                                $("#TicketType_DiscountType").text(response.DiscountType);
+                                $("#TicketType_TicketPeriod_label").text(response.TicketPeriod);
+                                $("#TicketType_TicketPeriod").val(response.TicketPeriod);
+                                $("#TicketType_Zone_label").text(response.Zone);
+                                $("#TicketType_Zone").val(response.Zone);
+                                $("#TicketType_DiscountType_label").text(response.DiscountType);
+                                $("#TicketType_DiscountType").val(response.DiscountType);
                                 $("#TicketType_Id").val(response.TicketTypeId);
                                 $("#NumberOfTickets").val(1);
                                 $("#CardId").val(card);
@@ -76,16 +79,19 @@
         <label id="ValidToDate"></label>
         <br/>
         @Html.HiddenFor(m => m.TicketType.Id)
+		@Html.HiddenFor(m => m.TicketType.TicketPeriod)
+		@Html.HiddenFor(m => m.TicketType.Zone)
+		@Html.HiddenFor(m => m.TicketType.DiscountType)
         @Html.HiddenFor(m => m.NumberOfTickets)
         @Html.HiddenFor(m => m.CardId)
         <label>Ticket period: </label>
-        <label id="TicketType_TicketPeriod"></label>
+        <label id="TicketType_TicketPeriod_label"></label>
         <br/>
         <label>Zone: </label>
-        <label id="TicketType_Zone"></label>
+        <label id="TicketType_Zone_label"></label>
         <br/>
         <label>Discount: </label>
-        <label id="TicketType_DiscountType"></label>
+        <label id="TicketType_DiscountType_label"></label>
         <br/>
         <button class="btn btn-primary" onclick="buyNew();" type="button">Buy new</button>
         <button class="btn btn-primary" onclick="showPaymentOptions();" type="button" id="same_ticket"></button>
