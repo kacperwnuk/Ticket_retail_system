@@ -1,4 +1,5 @@
-﻿@model TicketRetailSystem.ViewModels.EverythingViewModel
+﻿@using System.ServiceModel.Security
+@model TicketRetailSystem.ViewModels.EverythingViewModel
 @{
     ViewBag.Title = "Statistics of ticket sale";
 }
@@ -8,6 +9,19 @@
 <div class="panel-group">
     @if (Model != null)
     {
+        <p>
+			@Model.ChosenData.StartTime - @Model.ChosenData.EndTime
+			<br/>
+            Zones:
+            @string.Join(", ", @Model.ChosenData.Zone.Select(g => g.ToString()))
+			<br/>
+            Discount types: 
+            @string.Join(", ", @Model.ChosenData.DiscountType.Select(g => g.ToString()))
+			<br/>
+            Payment types: 
+            @string.Join(", ", @Model.ChosenData.PaymentType.Select(g => g.ToString()))
+
+        </p>
         <h2>1. Overall statistics of selected transactions</h2>
         <p>
             <b>Total number of tickets:</b> @Model.DetailedInfo.Count <br />

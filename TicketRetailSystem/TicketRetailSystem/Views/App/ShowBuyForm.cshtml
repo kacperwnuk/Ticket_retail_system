@@ -103,15 +103,19 @@
         @Html.LabelFor(m => m.DiscountTypes)
         @Html.DropDownListFor(m => m.TicketType.DiscountType, new SelectList(Model.DiscountTypes, "DiscountTypeId", "Description"), new {@class = "form-control", onchange = "selected();"})
     </div>
-    
+
     if (Model.CardId == -1)
-     {         
-         <div>
-             <button class="btn" type="button" onclick="minus()">-</button>
-             @Html.TextBoxFor(m => m.NumberOfTickets, new {@class = "form-control", style = "display: inline; width: 50px; text-align: center;", Value = "1", Onfocus = "validate();"})
-             <button class="btn" type="button" onclick="plus()">+</button>
-         </div>
-     }
+    {
+        <div>
+            <button class="btn" type="button" onclick="minus()">-</button>
+            @Html.TextBoxFor(m => m.NumberOfTickets, new {@class = "form-control", style = "display: inline; width: 50px; text-align: center;", Value = "1", Onfocus = "validate();"})
+            <button class="btn" type="button" onclick="plus()">+</button>
+        </div>
+    }
+    else
+    {
+        @Html.HiddenFor(m => m.NumberOfTickets, new { Value =  "1"})
+    }
 
     foreach (var payment in Model.PaymentTypes)
     {

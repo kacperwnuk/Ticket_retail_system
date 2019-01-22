@@ -96,6 +96,7 @@ namespace TicketRetailSystem.ViewModels
 
         public int TotalAmount { get; set; }
         public IList<DetailedInfoViewModel> DetailedInfo { get; set; }
+        public ChosenListViewModel ChosenData { get; set; }
 
     }
 

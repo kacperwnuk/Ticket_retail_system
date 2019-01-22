@@ -94,13 +94,14 @@ namespace TicketRetailSystem.Controllers
         [HttpPost]
         public ActionResult GetAmountOfPeople(ChosenListViewModel chosenData)
         {
-            chosenData.EndTime = chosenData.EndTime.AddDays(1);
+            chosenData.EndTime = chosenData.EndTime.AddHours(23).AddMinutes(59).AddSeconds(59);
             if (chosenData.Zone == null || chosenData.DiscountType == null || chosenData.PaymentType == null)
             {
                 return View();
             }
             var findEverything = new EverythingViewModel()
             {
+                ChosenData = chosenData,
                 DetailedInfo = (from tr in ctx.Transactions
                                 join t in ctx.Tickets on tr.Id equals t.Transaction.Id
                                 join c in ctx.TransportCards on t.Card.Id equals c.Id
