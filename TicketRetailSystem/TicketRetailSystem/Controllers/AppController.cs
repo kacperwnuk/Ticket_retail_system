@@ -123,7 +123,7 @@ namespace TicketRetailSystem.Controllers
                     tickets.Add(new Ticket
                     {
                         TicketType = ctx.TicketTypes.Find(buyTicketViewModel.TicketType.Id),
-                        IssuedPrice = price.Value * numberOfTickets
+                        IssuedPrice = price.Value
                     });
                 }
             }
