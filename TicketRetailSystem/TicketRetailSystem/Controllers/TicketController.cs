@@ -102,42 +102,61 @@ namespace TicketRetailSystem.Controllers
             var findEverything = new EverythingViewModel()
             {
                 DetailedInfo = (from tr in ctx.Transactions
-                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                        join c in ctx.TransportCards on t.Card.Id equals c.Id
-                        join u in ctx.Users on c.User.Id equals u.Id
-                        where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
-                              && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
-                              && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
-                              && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
-                              && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
-                        select new DetailedInfoViewModel()
-                        {
-                            TransactionId = tr.Id,
-                            PaymentType = tr.PaymentType,
-                            TicketId = t.Id,
-                            TicketIssuedPrice = t.IssuedPrice,
-                            TicketType = t.TicketType,
-                            CardId = c.Id,
-                            UserId = u.Id,
-                            TransactionDate = tr.Date
+                                join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                                join c in ctx.TransportCards on t.Card.Id equals c.Id
+                                join u in ctx.Users on c.User.Id equals u.Id
+                                where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
+                                      && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                                      && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                                      && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                                      && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                                select new DetailedInfoViewModel()
+                                {
+                                    TransactionId = tr.Id,
+                                    PaymentType = tr.PaymentType,
+                                    TicketId = t.Id,
+                                    TicketIssuedPrice = t.IssuedPrice,
+                                    TicketType = t.TicketType,
+                                    CardId = c.Id,
+                                    UserId = u.Id,
+                                    TransactionDate = tr.Date
 
-                        }
+                                })
+                        .Union(from tr in ctx.Transactions
+                               join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                               where t.Card == null
+                                     && DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
+                                     && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                                     && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                                     && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                                     && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                               select new DetailedInfoViewModel
+                               {
+                                   TransactionId = tr.Id,
+                                   PaymentType = tr.PaymentType,
+                                   TicketId = t.Id,
+                                   TicketIssuedPrice = t.IssuedPrice,
+                                   TicketType = t.TicketType,
+                                   CardId = -1,
+                                   UserId = -1,
+                                   TransactionDate = tr.Date
+                               }
                     ).ToList(),
 
                 TotalAmount = (from tr in ctx.Transactions
-                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                        join c in ctx.TransportCards on t.Card.Id equals c.Id
-                        join u in ctx.Users on c.User.Id equals u.Id
-                        where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
-                              && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
-                              && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
-                              && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
-                              && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
+                               join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                               join c in ctx.TransportCards on t.Card.Id equals c.Id
+                               join u in ctx.Users on c.User.Id equals u.Id
+                               where DateTime.Compare(tr.Date, chosenData.StartTime) >= 0
+                                     && DateTime.Compare(tr.Date, chosenData.EndTime) <= 0
+                                     && (!chosenData.DiscountType.Any() || chosenData.DiscountType.Contains(t.TicketType.DiscountType))
+                                     && (!chosenData.PaymentType.Any() || chosenData.PaymentType.Contains(tr.PaymentType))
+                                     && (!chosenData.Zone.Any() || chosenData.Zone.Contains(t.TicketType.Zone))
                                select t.Id
                     ).Count()
             };
 
-           
+
             return View(findEverything);
         }
 
@@ -149,29 +168,29 @@ namespace TicketRetailSystem.Controllers
             var groupByTicketTypes = new TicketTypeViewModel()
             {
                 TicketZonesWithAmount = (from tr in ctx.Transactions
-                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                        join c in ctx.TransportCards on t.Card.Id equals c.Id
-                        where DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
-                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
-                        group new {t, c, tr} by c.CardType
+                                         join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                                         join c in ctx.TransportCards on t.Card.Id equals c.Id
+                                         where DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
+                                               DateTime.Compare(tr.Date, dates.EndTime) <= 0
+                                         group new { t, c, tr } by c.CardType
                         into types
-                        select new TicketTypeViewModel
-                        {
-                            CardType = types.Key,
-                            AmountOfTickets = types.Count()
-                        }
+                                         select new TicketTypeViewModel
+                                         {
+                                             CardType = types.Key,
+                                             AmountOfTickets = types.Count()
+                                         }
                     )
                     .Union(from tr in ctx.Transactions
-                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                        where t.Card == null && DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
-                              DateTime.Compare(tr.Date, dates.EndTime) <= 0
-                        group new {t, tr} by t.Card
+                           join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                           where t.Card == null && DateTime.Compare(tr.Date, dates.StartTime) >= 0 &&
+                                 DateTime.Compare(tr.Date, dates.EndTime) <= 0
+                           group new { t, tr } by t.Card
                         into types
-                        select new TicketTypeViewModel
-                        {
-                            CardType = CardType.Paper,
-                            AmountOfTickets = types.Count()
-                        }
+                           select new TicketTypeViewModel
+                           {
+                               CardType = CardType.Paper,
+                               AmountOfTickets = types.Count()
+                           }
                     ).ToList()
             };
 
@@ -188,22 +207,22 @@ namespace TicketRetailSystem.Controllers
             var transactions = new TransactionViewModel()
             {
                 Transcations = (from tr in ctx.Transactions
-                        join t in ctx.Tickets on tr.Id equals t.Transaction.Id
-                        join c in ctx.TransportCards on t.Card.Id equals c.Id
-                        join u in ctx.Users on c.User.Id equals u.Id
-                        where tr.Date >= startDate && tr.Date <= endDate
-                        select new TransactionViewModel
-                        {
-                            TransactionId = tr.Id,
-                            TotalPrice = tr.TotalPrice,
-                            PaymentType = tr.PaymentType,
-                            TicketId = t.Id,
-                            TicketIssuedPrice = t.IssuedPrice,
-                            TicketType = t.TicketType,
-                            CardId = c.Id,
-                            UserId = u.Id,
-                            TransactionDate = tr.Date
-                        }
+                                join t in ctx.Tickets on tr.Id equals t.Transaction.Id
+                                join c in ctx.TransportCards on t.Card.Id equals c.Id
+                                join u in ctx.Users on c.User.Id equals u.Id
+                                where tr.Date >= startDate && tr.Date <= endDate
+                                select new TransactionViewModel
+                                {
+                                    TransactionId = tr.Id,
+                                    TotalPrice = tr.TotalPrice,
+                                    PaymentType = tr.PaymentType,
+                                    TicketId = t.Id,
+                                    TicketIssuedPrice = t.IssuedPrice,
+                                    TicketType = t.TicketType,
+                                    CardId = c.Id,
+                                    UserId = u.Id,
+                                    TransactionDate = tr.Date
+                                }
                     ).ToList()
             };
 
@@ -218,19 +237,19 @@ namespace TicketRetailSystem.Controllers
             var userTickets = new UserTicketsViewModel()
             {
                 Tickets = (from u in ctx.Users
-                        join c in ctx.TransportCards on u.Id equals c.User.Id
-                        join t in ctx.Tickets on c.Id equals t.Card.Id
-                        where u.Id == id
-                        select new UserTicketsViewModel
-                        {
-                            UserId = u.Id,
-                            UserName = u.Name,
-                            UserSurname = u.Surname,
-                            CardType = c.CardType,
-                            IsActive = c.IsActive,
-                            TicketType = t.TicketType,
-                            ValidFromDate = t.ValidFromDate
-                        }
+                           join c in ctx.TransportCards on u.Id equals c.User.Id
+                           join t in ctx.Tickets on c.Id equals t.Card.Id
+                           where u.Id == id
+                           select new UserTicketsViewModel
+                           {
+                               UserId = u.Id,
+                               UserName = u.Name,
+                               UserSurname = u.Surname,
+                               CardType = c.CardType,
+                               IsActive = c.IsActive,
+                               TicketType = t.TicketType,
+                               ValidFromDate = t.ValidFromDate
+                           }
                     ).ToList()
             };
 
@@ -247,7 +266,7 @@ namespace TicketRetailSystem.Controllers
                 Profit = ctx.Transactions
                              .Where(el =>
                                  DateTime.Compare(el.Date, dates.StartTime) >= 0 &&
-                                 DateTime.Compare(el.Date, dates.EndTime) <= 0).Sum(el => (decimal?) el.TotalPrice) ?? 0,
+                                 DateTime.Compare(el.Date, dates.EndTime) <= 0).Sum(el => (decimal?)el.TotalPrice) ?? 0,
                 StartDate = dates.StartTime,
                 EndDate = dates.EndTime
             };

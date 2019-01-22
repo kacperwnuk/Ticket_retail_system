@@ -1,50 +1,171 @@
 ﻿@model TicketRetailSystem.ViewModels.EverythingViewModel
 @{
-    ViewBag.Title = "Statystyka zakupu biletów";
+    ViewBag.Title = "Statistics of ticket sale";
 }
 
-<h2>Statistics of ticket sale </h2>
+<h1>Statistics of ticket sale</h1>
 
 <div class="panel-group">
     @if (Model != null)
     {
-        <p>Total number of records: @Model.TotalAmount</p>
+        <h2>1. Overall statistics of selected transactions</h2>
+        <p>
+            <b>Total number of tickets:</b> @Model.DetailedInfo.Count <br />
+            <b>Total profit:</b> @Model.DetailedInfo.Sum(item => item.TicketIssuedPrice) <br />
+            @{
+                var topDiscounts = Model.DetailedInfo
+                .GroupBy(i => i.TicketType.DiscountType)
+                .OrderByDescending(g => g.Count());
+                //.Select(g => g.Key);
 
+                var topZones = Model.DetailedInfo
+                .GroupBy(i => i.TicketType.Zone)
+                .OrderByDescending(g => g.Count());
+                //.Select(g => g.Key);
+
+                var topPaymentTypes = Model.DetailedInfo
+                .GroupBy(i => i.PaymentType)
+                .OrderByDescending(g => g.Count());
+                //.Select(g => g.Key);
+            }
+            <b>Most frequent discount type(s):</b> @string.Join(", ", topDiscounts.Select(g => g.Key)) <br />
+            <b>Most frequent zone(s): </b> @string.Join(", ", topZones.Select(g => g.Key)) <br />
+            <b>Most frequent payment method(s):</b>  @string.Join(", ", topPaymentTypes.Select(g => g.Key))
+
+
+        </p>
+
+        <h3>1.1 Discount stats</h3>
         <table class="table table-striped">
             <thead>
-            <tr>
-                <th scope="col">Ticket ID</th>
-                <th scope="col">ID user</th>
-                <th scope="col">ID card</th>
-                <th scope="col">Payment type</th>
-                <th scope="col">Discount type</th>
-                <th scope="col">Zone</th>
-                <th scope="col">Price</th>
-                <th scope="col">ID transaction</th>
-                <th scope="col">Transaction date</th>
-            </tr>
+                <tr>
+                    <th scope="col">Discount type</th>
+                    <th scope="col">Number of tickets</th>
+                    <th scope="col">Profit</th>
+
+                </tr>
             </thead>
             <tbody>
-            @foreach (var di in Model.DetailedInfo)
-            {
+                @foreach (var discount in topDiscounts)
+                {
+                    <tr>
+                        <th scope="row">@discount.Key</th>
+                        @{
+                            var profit = Model.DetailedInfo.Where(i => i.TicketType.DiscountType == discount.Key).Sum(i => i.TicketIssuedPrice);
+                        }
+                        <td>@discount.Count()</td>
+                        <td>@profit</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h3>1.2 Zone stats</h3>
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <th scope="row">@di.TicketId</th>
-                    <td>@di.UserId</td>
-                    <td>@di.CardId</td>
-                    <td>@di.PaymentType</td>
-                    <td>@di.TicketType.DiscountType</td>
-                    <td>@di.TicketType.Zone</td>
-                    <td>@di.TicketIssuedPrice</td>
-                    <td>@di.TransactionId</td>
-                    <td>@di.TransactionDate.ToString("dd.MM.yyyy")</td>
+                    <th scope="col">Zone</th>
+                    <th scope="col">Number of tickets</th>
+                    <th scope="col">Profit</th>
+
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @foreach (var zone in topZones)
+                {
+                    <tr>
+                        <th scope="row">@zone.Key</th>
+                        @{
+                            var profit = Model.DetailedInfo.Where(i => i.TicketType.Zone == zone.Key).Sum(i => i.TicketIssuedPrice);
+                        }
+                        <td>@zone.Count()</td>
+                        <td>@profit</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h3>1.3 Payment method stats</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Payment method</th>
+                    <th scope="col">Number of tickets</th>
+                    <th scope="col">Profit</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pmet in topPaymentTypes)
+                {
+                    <tr>
+                        <th scope="row">@pmet.Key</th>
+                        @{
+                            var profit = Model.DetailedInfo.Where(i => i.PaymentType == pmet.Key).Sum(i => i.TicketIssuedPrice);
+                        }
+                        <td>@pmet.Count()</td>
+                        <td>@profit</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <br/>
+
+        <h2>2. List of tickets in selected transactions</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Ticket ID</th>
+                    <th scope="col">ID user</th>
+                    <th scope="col">ID card</th>
+                    <th scope="col">Payment type</th>
+                    <th scope="col">Discount type</th>
+                    <th scope="col">Zone</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Transaction ID</th>
+                    <th scope="col">Transaction date & time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var di in Model.DetailedInfo)
+                {
+                    <tr>
+                        <th scope="row">@di.TicketId</th>
+                        <td>
+                            @if (di.UserId != -1)
+                            {
+                                @di.UserId
+                            }
+                            else
+                            {
+                                @:-
+                            }
+                        </td>
+                        <td>
+                            @if (di.CardId != -1)
+                            {
+                                @di.CardId
+                            }
+                            else
+                            {
+                                @:-
+                            }
+                        </td>
+                        <td>@di.PaymentType</td>
+                        <td>@di.TicketType.DiscountType</td>
+                        <td>@di.TicketType.Zone</td>
+                        <td>@di.TicketIssuedPrice</td>
+                        <td>@di.TransactionId</td>
+                        <td>@di.TransactionDate.ToString("dd.MM.yyyy  hh:mm:ss")</td>
+                    </tr>
+                }
             </tbody>
         </table>
     }
     else
     {
-        <p> Należy wybrać jakąkolwiek wartość w polach strefa, typ płatności itp..</p>
+        <p> Należy wybrać jakąkolwiek wartość w polach strefa, typ płatności itp.</p>
     }
 
 </div>
