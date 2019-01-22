@@ -4,25 +4,58 @@
     ViewBag.Title = "Statistics of ticket sale";
 }
 
+<style>
+</style>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.data').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]],
+            "filter": false,
+            "info": false
+        }
+        )
+
+        let nice = true;
+
+        $('#tickets').DataTable({
+            "paging": nice,
+            "order": [[0, "asc"]],
+            "filter": false,
+            "info": nice,
+        }
+        )
+    });
+</script>
+
 <h1>Statistics of ticket sale</h1>
 
 <div class="panel-group">
     @if (Model != null)
     {
+        <h2>1. Report info</h2>
         <p>
-			@Model.ChosenData.StartTime - @Model.ChosenData.EndTime
-			<br/>
-            Zones:
+            <b>Chosen dates:</b>
+            @Model.ChosenData.StartTime - @Model.ChosenData.EndTime
+            <br />
+
+            <b>Chosen zones:</b>
             @string.Join(", ", @Model.ChosenData.Zone.Select(g => g.ToString()))
-			<br/>
-            Discount types: 
+            <br />
+
+            <b>Chosen discount types:</b>
             @string.Join(", ", @Model.ChosenData.DiscountType.Select(g => g.ToString()))
-			<br/>
-            Payment types: 
+            <br />
+
+            <b>Chosen payment types: </b>
             @string.Join(", ", @Model.ChosenData.PaymentType.Select(g => g.ToString()))
 
         </p>
-        <h2>1. Overall statistics of selected transactions</h2>
+
+        <h2>2. Overall statistics of selected transactions</h2>
         <p>
             <b>Total number of tickets:</b> @Model.DetailedInfo.Count <br />
             <b>Total profit:</b> @Model.DetailedInfo.Sum(item => item.TicketIssuedPrice) <br />
@@ -49,8 +82,11 @@
 
         </p>
 
-        <h3>1.1 Discount stats</h3>
-        <table class="table table-striped">
+        <h2>3. Statistics of</h2>
+
+        <h3>3.1 Discount types</h3>
+        <small>Click column's heading to sort by that column.</small>
+        <table class="data table table-striped">
             <thead>
                 <tr>
                     <th scope="col">Discount type</th>
@@ -74,8 +110,9 @@
             </tbody>
         </table>
 
-        <h3>1.2 Zone stats</h3>
-        <table class="table table-striped">
+        <h3>3.2 Zones</h3>
+        <small>Click column's heading to sort by that column.</small>
+        <table class="data table table-striped">
             <thead>
                 <tr>
                     <th scope="col">Zone</th>
@@ -99,8 +136,9 @@
             </tbody>
         </table>
 
-        <h3>1.3 Payment method stats</h3>
-        <table class="table table-striped">
+        <h3>3.3 Payment method stats</h3>
+        <small>Click column's heading to sort by that column.</small>
+        <table class="data table table-striped">
             <thead>
                 <tr>
                     <th scope="col">Payment method</th>
@@ -124,15 +162,16 @@
             </tbody>
         </table>
 
-        <br/>
+        <br />
 
-        <h2>2. List of tickets in selected transactions</h2>
-        <table class="table table-striped">
+        <h2>4. List of all tickets in selected transactions</h2>
+        <small>Click column's heading to sort by that column.</small> <br/><br/>
+        <table id="tickets" class="table table-striped">
             <thead>
                 <tr>
                     <th scope="col">Ticket ID</th>
-                    <th scope="col">ID user</th>
-                    <th scope="col">ID card</th>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Card ID</th>
                     <th scope="col">Payment type</th>
                     <th scope="col">Discount type</th>
                     <th scope="col">Zone</th>
@@ -171,7 +210,7 @@
                         <td>@di.TicketType.Zone</td>
                         <td>@di.TicketIssuedPrice</td>
                         <td>@di.TransactionId</td>
-                        <td>@di.TransactionDate.ToString("dd.MM.yyyy  hh:mm:ss")</td>
+                        <td>@di.TransactionDate.ToString("dd.MM.yyyy  HH:mm:ss")</td>
                     </tr>
                 }
             </tbody>
@@ -179,7 +218,7 @@
     }
     else
     {
-        <p> Należy wybrać jakąkolwiek wartość w polach strefa, typ płatności itp.</p>
+        <p>At least one value must be chosen for zone, discount type and payment type.</p>
     }
 
 </div>
